@@ -98,9 +98,9 @@ jobs:
         shell: bash
       - name: Remove build id
         run: sed -i -e 's/-Wl,/-Wl,--build-id=none,/' ${{ steps.flutter-action.outputs.PUB-CACHE-PATH }}/hosted/pub.dev/jni-*/src/CMakeLists.txt
-      - name: Build Flutter for Android arm64
+      - name: Build Flutter for Android
         run: >-
-          flutter build apk --split-per-abi --target-platform android-arm64
+          flutter build apk --split-per-abi
           --dart-define=DANDANAPI_APPID=$DANDANAPI_APPID
           --dart-define=DANDANAPI_KEY=$DANDANAPI_KEY
           --dart-define=KAZUMI_APPID=$KAZUMI_APPID
@@ -132,6 +132,7 @@ jobs:
           }
           echo "tag=$tag" >> $env:GITHUB_ENV
       - run: echo "Kazumi_windows_${env:tag}.msix build progress"
+      - run: choco install yq
       - name: Enable Git longpaths
         run: git config --system core.longpaths true
       - name: Set up Flutter
@@ -224,20 +225,15 @@ jobs:
 
       - name: Ensure APK Signed
         if: ${{ env.SIGNING_KEY_BASE64 == '' }}
-
         run: |
-          if ! $ANDROID_HOME/build-tools/34.0.0/apksigner verify build/signed/Kazumi_android_arm64-v8a_${{ env.tag }}.apk > /dev/null 2>&1; then
-            echo "APK not signed by Gradle, signing with kazumi.jks..."
-            $ANDROID_HOME/build-tools/34.0.0/apksigner sign \
-              --ks android/app/kazumi.jks \
-              --ks-key-alias kazumi \
-              --ks-pass pass:kazumi123 \
-              --key-pass pass:kazumi123 \
-              --out build/signed/Kazumi_android_arm64-v8a_${{ env.tag }}.apk \
-              build/unsigned/Kazumi_android_arm64-v8a_${{ env.tag }}.apk
-          else
-            echo "APK already signed by Gradle."
-          fi
+          echo "Signing APK with repository release key kazumi.jks..."
+          $ANDROID_HOME/build-tools/34.0.0/apksigner sign \
+            --ks android/app/kazumi.jks \
+            --ks-key-alias kazumi \
+            --ks-pass pass:kazumi123 \
+            --key-pass pass:kazumi123 \
+            --out build/signed/Kazumi_android_arm64-v8a_${{ env.tag }}.apk \
+            build/unsigned/Kazumi_android_arm64-v8a_${{ env.tag }}.apk
           echo "APK Signature Details:"
           $ANDROID_HOME/build-tools/34.0.0/apksigner verify -v --print-certs build/signed/Kazumi_android_arm64-v8a_${{ env.tag }}.apk
         shell: bash

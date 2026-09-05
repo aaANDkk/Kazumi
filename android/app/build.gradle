@@ -75,11 +75,8 @@ android {
 
     buildTypes {
         release {
-            if (keystorePropertiesFile.exists()) {
-                signingConfig signingConfigs.release
-            } else {
-                signingConfig signingConfigs.debug
-            }
+            // Signing with debug keys during Gradle assemble, then permanently signed with kazumi.jks via apksigner in CI release job
+            signingConfig signingConfigs.debug
         }
     }
 
