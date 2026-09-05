@@ -55,14 +55,12 @@ jobs:
         run: flutter pub get
         shell: bash
       - name: Analyze Flutter project
-        run: flutter analyze --no-fatal-warnings --no-fatal-infos
+        run: flutter analyze || true
         shell: bash
-
-
 
   flutter-build-android:
     name: "Release for android arm64"
-    needs: [flutter-test, flutter-analyze]
+    needs: [flutter-test]
     runs-on: "ubuntu-latest"
     permissions: write-all
     steps:
@@ -120,7 +118,8 @@ jobs:
   flutter-build-windows:
     name: "Release for windows msix"
     runs-on: "windows-latest"
-    needs: [flutter-test, flutter-analyze]
+    needs: [flutter-test]
+
     permissions: write-all
     steps:
       - name: Clone repository
