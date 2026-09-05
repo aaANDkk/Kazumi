@@ -308,8 +308,7 @@ class _BangumiHistoryCardVState extends State<BangumiHistoryCardV> {
             ),
           ),
         ),
-      ),
-    );
+      );
 
     if (!widget.enableDismiss) {
       return cardWidget;
