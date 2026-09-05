@@ -221,6 +221,27 @@ jobs:
         if: ${{ env.SIGNING_KEY_BASE64 != '' }}
         run: cp ${{ steps.sign_app.outputs.signedReleaseFile }} build/signed/Kazumi_android_arm64-v8a_${{ env.tag }}.apk
 
+      - name: Ensure APK Signed
+        if: ${{ env.SIGNING_KEY_BASE64 == '' }}
+
+        run: |
+          if ! $ANDROID_HOME/build-tools/34.0.0/apksigner verify build/signed/Kazumi_android_arm64-v8a_${{ env.tag }}.apk > /dev/null 2>&1; then
+            echo "APK not signed by Gradle, signing with kazumi.jks..."
+            $ANDROID_HOME/build-tools/34.0.0/apksigner sign \
+              --ks android/app/kazumi.jks \
+              --ks-key-alias kazumi \
+              --ks-pass pass:kazumi123 \
+              --key-pass pass:kazumi123 \
+              --out build/signed/Kazumi_android_arm64-v8a_${{ env.tag }}.apk \
+              build/unsigned/Kazumi_android_arm64-v8a_${{ env.tag }}.apk
+          else
+            echo "APK already signed by Gradle."
+          fi
+          echo "APK Signature Details:"
+          $ANDROID_HOME/build-tools/34.0.0/apksigner verify -v --print-certs build/signed/Kazumi_android_arm64-v8a_${{ env.tag }}.apk
+        shell: bash
+
+
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
