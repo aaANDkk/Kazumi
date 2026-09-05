@@ -19,6 +19,7 @@ import 'package:kazumi/utils/device.dart';
 import 'package:kazumi/services/platform/webview_feature_service.dart';
 import 'package:kazumi/bean/dialog/dialog_helper.dart';
 import 'package:kazumi/navigation.dart';
+import 'package:kazumi/utils/font_manager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,6 +41,11 @@ void main() async {
     final hivePath = '${(await getApplicationSupportDirectory()).path}/hive';
     await Hive.initFlutter(hivePath);
     await GStorage.init();
+    final useCustomFont = GStorage.getSetting(SettingsKeys.useCustomFont);
+    final customFontPath = GStorage.getSetting(SettingsKeys.customFontPath);
+    if (useCustomFont && customFontPath.isNotEmpty) {
+      await FontManager.loadCustomFont(customFontPath);
+    }
   } catch (e) {
     // Log the error for debugging (if logger is available)
     debugPrint('Storage initialization failed: $e');

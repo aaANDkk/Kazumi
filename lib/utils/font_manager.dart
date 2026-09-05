@@ -9,11 +9,15 @@ import 'package:path_provider/path_provider.dart';
 class FontManager {
   static const String customFontFamily = 'CustomUserFont';
   static bool _isLoaded = false;
+  static String? _loadedFilePath;
 
   static bool get isLoaded => _isLoaded;
 
   /// Loads the custom font from [filePath] via Flutter's [FontLoader].
   static Future<bool> loadCustomFont(String filePath) async {
+    if (_isLoaded && _loadedFilePath == filePath) {
+      return true;
+    }
     try {
       final file = File(filePath);
       if (!await file.exists()) {
@@ -28,6 +32,7 @@ class FontManager {
 
       await fontLoader.load();
       _isLoaded = true;
+      _loadedFilePath = filePath;
       KazumiLogger().i('FontManager: custom font loaded from $filePath');
       return true;
     } catch (e, stack) {

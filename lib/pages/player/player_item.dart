@@ -9,6 +9,7 @@ import 'package:kazumi/pages/player/player_screenshot_feedback_overlay.dart';
 import 'package:kazumi/pages/player/smallest_player_item_panel.dart';
 import 'package:kazumi/pages/player/syncplay_sheet.dart';
 import 'package:kazumi/utils/constants.dart';
+import 'package:kazumi/utils/font_manager.dart';
 import 'package:kazumi/services/logging/logger.dart';
 import 'package:kazumi/services/player/pip_utils.dart';
 import 'package:kazumi/services/sync/webdav.dart';
@@ -110,6 +111,20 @@ class _PlayerItemState extends State<PlayerItem>
   late int _danmakuFontWeight;
   late bool _danmakuUseSystemFont;
   late double _danmakuBorderSize;
+
+  String? get _danmakuFontFamily {
+    final useCustomFont = GStorage.getSetting(SettingsKeys.useCustomFont);
+    if (useCustomFont) {
+      final customFontPath = GStorage.getSetting(SettingsKeys.customFontPath);
+      if (customFontPath.isNotEmpty) {
+        if (!FontManager.isLoaded) {
+          FontManager.loadCustomFont(customFontPath);
+        }
+        return FontManager.customFontFamily;
+      }
+    }
+    return _danmakuUseSystemFont ? null : customAppFontFamily;
+  }
 
   late bool haEnable;
   late bool autoPlayNext;
@@ -1652,9 +1667,7 @@ class _PlayerItemState extends State<PlayerItem>
                           strokeWidth: _border ? _danmakuBorderSize : 0.0,
                           fontWeight: _danmakuFontWeight,
                           massiveMode: _massiveMode,
-                          fontFamily: _danmakuUseSystemFont
-                              ? null
-                              : customAppFontFamily,
+                          fontFamily: _danmakuFontFamily,
                         ),
                       ),
                     ),
