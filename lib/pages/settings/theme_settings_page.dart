@@ -416,7 +416,7 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
                     description: Text(customFontName.isNotEmpty
                         ? customFontName
                         : '进入文件管理选择 .ttf 字体文件'),
-                    onTap: () async {
+                    onPressed: (context) async {
                       await _pickNewFont();
                     },
                   ),
