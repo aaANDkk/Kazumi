@@ -101,7 +101,7 @@ class HistoryPlaybackService {
           currentEpisodeTitle: history.lastWatchEpisodeName,
         );
         if (nextIdx == null) {
-          return const HistoryPlaybackUnavailable('已经是最新一集');
+          return const HistoryPlaybackUnavailable('当前已是最新集了');
         }
         targetEpisode = nextIdx;
         targetOffset = 0;
@@ -168,7 +168,7 @@ class HistoryPlaybackService {
         }
       }
       if (targetEpisode == null) {
-        return const HistoryPlaybackUnavailable('已经是最新一集或下一集未下载');
+        return const HistoryPlaybackUnavailable('当前已是最新集了或下一集未下载');
       }
     } else {
       DownloadEpisode? numberMatch;

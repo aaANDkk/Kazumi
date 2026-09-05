@@ -116,7 +116,7 @@ jobs:
           path: Kazumi_android_arm64-v8a_*.apk
 
   flutter-build-windows:
-    name: "Release for windows msix"
+    name: "Release for windows"
     runs-on: "windows-latest"
     needs: [flutter-test, flutter-analyze]
 
@@ -131,7 +131,7 @@ jobs:
             $tag = "latest"
           }
           echo "tag=$tag" >> $env:GITHUB_ENV
-      - run: echo "Kazumi_windows_${env:tag}.msix build progress"
+      - run: echo "Kazumi_windows_${env:tag}.zip build progress"
       - run: choco install yq
       - name: Enable Git longpaths
         run: git config --system core.longpaths true
@@ -152,15 +152,12 @@ jobs:
           --dart-define=DANDANAPI_KEY=$env:DANDANAPI_KEY
           --dart-define=KAZUMI_APPID=$env:KAZUMI_APPID
           --dart-define=KAZUMI_KEY=$env:KAZUMI_KEY
-      - name: Build MSIX
-        run: |
-          dart run msix:create
-          Copy-Item "build/windows/x64/runner/Release/kazumi.msix" -Destination "Kazumi_windows_${env:tag}.msix"
-      - name: Upload windows msix outputs
+      - run: Compress-Archive build/windows/x64/runner/Release/* Kazumi_windows_${env:tag}.zip
+      - name: Upload windows outputs
         uses: actions/upload-artifact@v4
         with:
-          name: windows_msix_outputs
-          path: Kazumi_windows_*.msix
+          name: windows_outputs
+          path: Kazumi_windows_*.zip
 
   release:
     name: "Release"
@@ -188,13 +185,13 @@ jobs:
       - name: Setup Android build tools
         run: sdkmanager "build-tools;34.0.0"
 
-      - name: Download windows msix build file
+      - name: Download windows zip build file
         uses: actions/download-artifact@v4
         with:
-          name: windows_msix_outputs
-          path: windows_msix_outputs
+          name: windows_outputs
+          path: windows_outputs
       - name: Copy windows build file to root
-        run: cp windows_msix_outputs/* .
+        run: cp windows_outputs/* .
 
       - name: Download android build file
         uses: actions/download-artifact@v4
@@ -246,4 +243,4 @@ jobs:
           name: "Release ${{ env.tag }}"
           files: |
             build/signed/*.apk
-            Kazumi_windows_*.msix
+            Kazumi_windows_*.zip

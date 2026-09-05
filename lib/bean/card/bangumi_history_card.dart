@@ -82,7 +82,10 @@ class _BangumiHistoryCardVState extends State<BangumiHistoryCardV> {
       case HistoryPlaybackReady(:final args):
         context.pushNamed('/video/', arguments: args);
       case HistoryPlaybackUnavailable(:final reason):
-        KazumiDialog.showToast(message: reason);
+        Future.delayed(const Duration(milliseconds: 150), () {
+          if (!mounted) return;
+          KazumiDialog.showToast(message: reason, context: context);
+        });
     }
   }
 

@@ -60,7 +60,10 @@ class _RecentWatchCardState extends State<RecentWatchCard> {
       case HistoryPlaybackReady(:final args):
         context.pushNamed('/video/', arguments: args);
       case HistoryPlaybackUnavailable(:final reason):
-        KazumiDialog.showToast(message: reason);
+        Future.delayed(const Duration(milliseconds: 150), () {
+          if (!mounted) return;
+          KazumiDialog.showToast(message: reason, context: context);
+        });
     }
   }
 
@@ -118,25 +121,35 @@ class _RecentWatchCardState extends State<RecentWatchCard> {
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: 3),
-                      Row(
-                        children: [
-                          _pill(
-                            label: item.sourceLabel,
-                            background: colorScheme.secondaryContainer,
-                            foreground: colorScheme.onSecondaryContainer,
-                          ),
-                          const SizedBox(width: 4),
-                          Flexible(
-                            child: _pill(
-                              label: item.adapterName,
-                              background: colorScheme.surfaceContainerHighest,
-                              foreground: colorScheme.onSurfaceVariant,
+                          const SizedBox(width: 6),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 1),
+                            decoration: BoxDecoration(
+                              color: colorScheme.surfaceContainerHighest,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              '${item.sourceLabel} · ${item.adapterName}',
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: colorScheme.onSurfaceVariant,
+                                fontSize: 10,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                          const SizedBox(width: 6),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.access_time,
+                            size: 12,
+                            color: colorScheme.outline,
+                          ),
+                          const SizedBox(width: 4),
                           Text(
                             formatTimestampToRelativeTime(
                               item.lastWatchTime.millisecondsSinceEpoch ~/ 1000,
@@ -217,29 +230,6 @@ class _RecentWatchCardState extends State<RecentWatchCard> {
         src: widget.item.coverUrl,
         width: _coverWidth,
         height: _coverHeight,
-      ),
-    );
-  }
-
-  Widget _pill({
-    required String label,
-    required Color background,
-    required Color foreground,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
-      decoration: BoxDecoration(
-        color: background,
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Text(
-        label,
-        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color: foreground,
-              fontSize: 10,
-            ),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
       ),
     );
   }
