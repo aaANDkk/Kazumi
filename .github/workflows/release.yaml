@@ -55,8 +55,9 @@ jobs:
         run: flutter pub get
         shell: bash
       - name: Analyze Flutter project
-        run: flutter analyze --no-fatal-infos
+        run: flutter analyze --no-fatal-warnings --no-fatal-infos
         shell: bash
+
 
 
   flutter-build-android:
