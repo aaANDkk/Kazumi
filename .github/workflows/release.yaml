@@ -13,10 +13,10 @@ on:
         default: 'warning'
 
 env:
-  DANDANAPI_APPID: ${{ secrets.DANDANAPI_APPID }}
-  DANDANAPI_KEY: ${{ secrets.DANDANAPI_KEY }}
-  KAZUMI_APPID: ${{ secrets.KAZUMI_APPID }}
-  KAZUMI_KEY: ${{ secrets.KAZUMI_KEY }}
+  DANDANAPI_APPID: ${{ secrets.DANDANAPI_APPID || 'qb998n8g3u' }}
+  DANDANAPI_KEY: ${{ secrets.DANDANAPI_KEY || '4y2waS6A6yb4uw7Dhd9pmdTzvrF7YUsg' }}
+  KAZUMI_APPID: ${{ secrets.KAZUMI_APPID || 'kazumi-hh47hcih6xfodp50' }}
+  KAZUMI_KEY: ${{ secrets.KAZUMI_KEY || 'EKlABDVRMb8g5OkCH78SL14riZU4zmkR' }}
   SIGNING_KEY_BASE64: ${{ secrets.SIGNING_KEY_BASE64 }}
 
 jobs:
