@@ -154,6 +154,8 @@ abstract class _VideoPageController with Store implements Disposable {
 
   StreamSubscription<String>? _logSubscription;
 
+  bool hasExplicitTargetEpisode = false;
+
   /// Applies the route arguments exactly once, from [VideoPage.initState].
   @action
   void applyPlaybackArgs(VideoPlaybackArgs args) {
@@ -165,7 +167,18 @@ abstract class _VideoPageController with Store implements Disposable {
         src = args.src;
         roadList.clear();
         roadList.addAll(args.roads);
+        if (args.targetEpisode != null) {
+          hasExplicitTargetEpisode = true;
+          resetEpisodeState(
+            episode: args.targetEpisode!,
+            road: args.targetRoad ?? 0,
+          );
+          historyOffset = args.targetOffset;
+        } else {
+          hasExplicitTargetEpisode = false;
+        }
       case OfflineVideoPlaybackArgs():
+        hasExplicitTargetEpisode = false;
         _initForOfflinePlayback(
           bangumiItem: args.bangumiItem,
           pluginName: args.pluginName,

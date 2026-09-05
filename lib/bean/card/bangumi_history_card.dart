@@ -47,7 +47,18 @@ class _BangumiHistoryCardVState extends State<BangumiHistoryCardV> {
     super.dispose();
   }
 
-  Future<void> _onTap() async {
+  void _onCardTap() {
+    if (widget.showDelete) {
+      widget.onDeleted?.call();
+      return;
+    }
+    context.pushNamed(
+      '/info/',
+      arguments: widget.historyItem.bangumiItem,
+    );
+  }
+
+  Future<void> _playEpisode({required bool nextEpisode}) async {
     if (widget.showDelete) {
       KazumiDialog.showToast(message: '编辑模式');
       return;
@@ -63,6 +74,7 @@ class _BangumiHistoryCardVState extends State<BangumiHistoryCardV> {
     final result = await _playbackService.open(
       widget.historyItem,
       cancelToken: cancelToken,
+      nextEpisode: nextEpisode,
     );
     KazumiDialog.dismiss();
     if (!mounted) return;
@@ -78,9 +90,9 @@ class _BangumiHistoryCardVState extends State<BangumiHistoryCardV> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final double imageWidth = 80;
-    final double imageHeight = 108;
-    final String title = widget.historyItem.bangumiItem.nameCn == ''
+    const double imageWidth = 86;
+    const double imageHeight = 118;
+    final String title = widget.historyItem.bangumiItem.nameCn.isEmpty
         ? widget.historyItem.bangumiItem.name
         : widget.historyItem.bangumiItem.nameCn;
     final String episodeText = widget.historyItem.lastWatchEpisodeName.isEmpty
@@ -116,7 +128,7 @@ class _BangumiHistoryCardVState extends State<BangumiHistoryCardV> {
         clipBehavior: Clip.antiAlias,
         color: colorScheme.surfaceContainerLow,
         child: InkWell(
-          onTap: _onTap,
+          onTap: _onCardTap,
           child: Padding(
             padding: const EdgeInsets.all(12),
             child: Row(
@@ -137,22 +149,63 @@ class _BangumiHistoryCardVState extends State<BangumiHistoryCardV> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          title,
-                          style: theme.textTheme.titleSmall?.copyWith(
-                            color: colorScheme.onSurface,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                title,
+                                style: theme.textTheme.titleSmall?.copyWith(
+                                  color: colorScheme.onSurface,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
+                            ),
+                            if (!widget.showDelete)
+                              Observer(
+                                builder: (context) {
+                                  collectController.collectibles.length;
+                                  return SizedBox(
+                                    width: 32,
+                                    height: 32,
+                                    child: CollectButton(
+                                      onClose: () {
+                                        FocusScope.of(context).unfocus();
+                                      },
+                                      bangumiItem:
+                                          widget.historyItem.bangumiItem,
+                                      color: colorScheme.onSurfaceVariant,
+                                    ),
+                                  );
+                                },
+                              ),
+                            if (widget.showDelete)
+                              SizedBox(
+                                width: 32,
+                                height: 32,
+                                child: IconButton(
+                                  padding: EdgeInsets.zero,
+                                  icon: Icon(
+                                    Icons.delete_outline,
+                                    size: 20,
+                                    color: colorScheme.error,
+                                  ),
+                                  tooltip: '删除记录',
+                                  onPressed: () {
+                                    widget.onDeleted?.call();
+                                  },
+                                ),
+                              ),
+                          ],
                         ),
-                        const SizedBox(height: 6),
+                        const SizedBox(height: 4),
                         Row(
                           children: [
                             Icon(
                               Icons.play_circle_outline,
                               size: 14,
-                              color: colorScheme.onSurfaceVariant,
+                              color: colorScheme.primary,
                             ),
                             const SizedBox(width: 4),
                             Flexible(
@@ -160,35 +213,33 @@ class _BangumiHistoryCardVState extends State<BangumiHistoryCardV> {
                                 episodeText,
                                 style: theme.textTheme.bodySmall?.copyWith(
                                   color: colorScheme.onSurfaceVariant,
+                                  fontWeight: FontWeight.w500,
                                 ),
                                 overflow: TextOverflow.ellipsis,
                                 maxLines: 1,
                               ),
                             ),
-                          ],
-                        ),
-                        const SizedBox(height: 4),
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.extension_outlined,
-                              size: 14,
-                              color: colorScheme.onSurfaceVariant,
-                            ),
-                            const SizedBox(width: 4),
-                            Flexible(
+                            const SizedBox(width: 6),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 6, vertical: 1),
+                              decoration: BoxDecoration(
+                                color: colorScheme.surfaceContainerHighest,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
                               child: Text(
                                 '$sourceText · ${widget.historyItem.adapterName}',
-                                style: theme.textTheme.bodySmall?.copyWith(
+                                style: theme.textTheme.labelSmall?.copyWith(
                                   color: colorScheme.onSurfaceVariant,
+                                  fontSize: 10,
                                 ),
-                                overflow: TextOverflow.ellipsis,
                                 maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
                           ],
                         ),
-                        const Spacer(),
+                        const SizedBox(height: 2),
                         Row(
                           children: [
                             Icon(
@@ -207,53 +258,61 @@ class _BangumiHistoryCardVState extends State<BangumiHistoryCardV> {
                             ),
                           ],
                         ),
+                        const Spacer(),
+                        Row(
+                          children: [
+                            SizedBox(
+                              height: 32,
+                              child: FilledButton.tonalIcon(
+                                style: FilledButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10),
+                                  visualDensity: VisualDensity.compact,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                                onPressed: () =>
+                                    _playEpisode(nextEpisode: false),
+                                icon: const Icon(Icons.play_arrow_rounded,
+                                    size: 16),
+                                label: const Text(
+                                  '继续观看',
+                                  style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            SizedBox(
+                              height: 32,
+                              child: OutlinedButton.icon(
+                                style: OutlinedButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10),
+                                  visualDensity: VisualDensity.compact,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                                onPressed: () =>
+                                    _playEpisode(nextEpisode: true),
+                                icon: const Icon(Icons.skip_next_rounded,
+                                    size: 16),
+                                label: const Text(
+                                  '下一集',
+                                  style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   ),
-                ),
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (!widget.showDelete) ...[
-                      Observer(
-                        builder: (context) {
-                          collectController.collectibles.length;
-                          return CollectButton(
-                            onClose: () {
-                              FocusScope.of(context).unfocus();
-                            },
-                            bangumiItem: widget.historyItem.bangumiItem,
-                            color: colorScheme.onSurfaceVariant,
-                          );
-                        },
-                      ),
-                      IconButton(
-                        icon: Icon(
-                          Icons.open_in_new,
-                          size: 20,
-                          color: colorScheme.onSurfaceVariant,
-                        ),
-                        tooltip: '番剧详情',
-                        onPressed: () {
-                          context.pushNamed(
-                            '/info/',
-                            arguments: widget.historyItem.bangumiItem,
-                          );
-                        },
-                      ),
-                    ],
-                    if (widget.showDelete)
-                      IconButton(
-                        icon: Icon(
-                          Icons.delete_outline,
-                          color: colorScheme.error,
-                        ),
-                        tooltip: '删除记录',
-                        onPressed: () {
-                          widget.onDeleted?.call();
-                        },
-                      ),
-                  ],
                 ),
               ],
             ),

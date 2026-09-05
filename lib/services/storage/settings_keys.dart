@@ -390,7 +390,22 @@ class SettingsKeys {
   );
   static const useSystemFont = SettingKey<bool>(
     _SettingBoxKey.useSystemFont,
+    true,
+    group: SettingGroup.theme,
+  );
+  static const useCustomFont = SettingKey<bool>(
+    _SettingBoxKey.useCustomFont,
     false,
+    group: SettingGroup.theme,
+  );
+  static const customFontPath = SettingKey<String>(
+    _SettingBoxKey.customFontPath,
+    '',
+    group: SettingGroup.theme,
+  );
+  static const customFontName = SettingKey<String>(
+    _SettingBoxKey.customFontName,
+    '',
     group: SettingGroup.theme,
   );
   static const forceAdBlocker = SettingKey<bool>(
@@ -592,6 +607,9 @@ class SettingsKeys {
     timelineNotShowWatchedBangumis,
     timelineOnlyShowWatchingBangumis,
     useSystemFont,
+    useCustomFont,
+    customFontPath,
+    customFontName,
     forceAdBlocker,
     backgroundPlayback,
     proxyEnable,
@@ -704,6 +722,9 @@ class _SettingBoxKey {
       timelineNotShowWatchedBangumis = 'timelineNotShowWatchedBangumis',
       timelineOnlyShowWatchingBangumis = 'timelineOnlyShowWatchingBangumis',
       useSystemFont = 'useSystemFont',
+      useCustomFont = 'useCustomFont',
+      customFontPath = 'customFontPath',
+      customFontName = 'customFontName',
       forceAdBlocker = 'forceAdBlocker',
       backgroundPlayback = 'backgroundPlayback',
       proxyEnable = 'proxyEnable',

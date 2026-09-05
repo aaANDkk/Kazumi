@@ -11,6 +11,7 @@ import 'package:kazumi/bean/settings/settings_detail_scaffold.dart';
 import 'package:kazumi/bean/settings/settings_list.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:kazumi/utils/device.dart';
+import 'package:kazumi/utils/font_manager.dart';
 import 'package:kazumi/utils/theme.dart';
 
 class ThemeSettingsPage extends StatefulWidget {
@@ -28,6 +29,9 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
   late bool useDynamicColor;
   late bool showWindowButton;
   late bool useSystemFont;
+  late bool useCustomFont;
+  late String customFontName;
+  late String customFontPath;
   late final ThemeProvider themeProvider;
   final MenuController menuController = MenuController();
 
@@ -40,6 +44,9 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
     useDynamicColor = GStorage.getSetting(SettingsKeys.useDynamicColor);
     showWindowButton = GStorage.getSetting(SettingsKeys.showWindowButton);
     useSystemFont = GStorage.getSetting(SettingsKeys.useSystemFont);
+    useCustomFont = GStorage.getSetting(SettingsKeys.useCustomFont);
+    customFontName = GStorage.getSetting(SettingsKeys.customFontName);
+    customFontPath = GStorage.getSetting(SettingsKeys.customFontPath);
     themeProvider = context.read<ThemeProvider>();
   }
 
@@ -47,6 +54,65 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
     if (KazumiDialog.observer.hasKazumiDialog) {
       KazumiDialog.dismiss();
       return;
+    }
+  }
+
+  void _applyThemeFont() {
+    dynamic color;
+    if (defaultThemeColor == 'default') {
+      color = Colors.green;
+    } else {
+      color = Color(int.parse(defaultThemeColor, radix: 16));
+    }
+    setTheme(color);
+  }
+
+  Future<void> _handleCustomFontToggle(bool? value) async {
+    final enable = value ?? !useCustomFont;
+    if (enable) {
+      if (customFontPath.isEmpty || !File(customFontPath).existsSync()) {
+        final success = await FontManager.pickAndApplyCustomFont();
+        if (success) {
+          useCustomFont = true;
+          customFontName = GStorage.getSetting(SettingsKeys.customFontName);
+          customFontPath = GStorage.getSetting(SettingsKeys.customFontPath);
+          themeProvider.setCustomFont(true);
+          _applyThemeFont();
+          setState(() {});
+          KazumiDialog.showToast(message: '已应用自定义字体: $customFontName');
+        } else {
+          KazumiDialog.showToast(message: '未选择 TTF 字体文件');
+        }
+      } else {
+        final success = await FontManager.loadCustomFont(customFontPath);
+        if (success) {
+          useCustomFont = true;
+          await GStorage.putSetting(SettingsKeys.useCustomFont, true);
+          themeProvider.setCustomFont(true);
+          _applyThemeFont();
+          setState(() {});
+        }
+      }
+    } else {
+      useCustomFont = false;
+      await FontManager.disableCustomFont();
+      themeProvider.setCustomFont(false);
+      _applyThemeFont();
+      setState(() {});
+      KazumiDialog.showToast(message: '已切换为系统默认字体');
+    }
+  }
+
+  Future<void> _pickNewFont() async {
+    final success = await FontManager.pickAndApplyCustomFont();
+    if (success) {
+      useCustomFont = true;
+      customFontName = GStorage.getSetting(SettingsKeys.customFontName);
+      customFontPath = GStorage.getSetting(SettingsKeys.customFontPath);
+      themeProvider.setCustomFont(true);
+      _applyThemeFont();
+      setState(() {});
+      KazumiDialog.showToast(message: '已应用自定义字体: $customFontName');
     }
   }
 
@@ -329,23 +395,29 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
                 SettingsTile.switchTile(
                   leading: Icons.font_download_rounded,
                   onToggle: (value) async {
-                    useSystemFont = value ?? !useSystemFont;
-                    await GStorage.putSetting(
-                        SettingsKeys.useSystemFont, useSystemFont);
-                    themeProvider.setFontFamily(useSystemFont);
-                    dynamic color;
-                    if (defaultThemeColor == 'default') {
-                      color = Colors.green;
-                    } else {
-                      color = Color(int.parse(defaultThemeColor, radix: 16));
-                    }
-                    setTheme(color);
-                    setState(() {});
+                    await _handleCustomFontToggle(value);
                   },
-                  title: Text('使用系统字体'),
-                  description: Text('关闭后使用 MI Sans 字体'),
-                  initialValue: useSystemFont,
+                  title: const Text('自定义字体'),
+                  description: Text(
+                    useCustomFont
+                        ? (customFontName.isNotEmpty
+                            ? '已启用: $customFontName'
+                            : '已开启，点击选择 TTF 字体')
+                        : '默认系统字体，开启后可选用自定义 TTF 字体',
+                  ),
+                  initialValue: useCustomFont,
                 ),
+                if (useCustomFont)
+                  SettingsTile(
+                    leading: Icons.folder_open_rounded,
+                    title: const Text('选择 / 更换 TTF 字体'),
+                    description: Text(customFontName.isNotEmpty
+                        ? customFontName
+                        : '进入文件管理选择 .ttf 字体文件'),
+                    onTap: () async {
+                      await _pickNewFont();
+                    },
+                  ),
               ],
               bottomInfo: Text('动态配色仅支持安卓12及以上和桌面平台'),
             ),

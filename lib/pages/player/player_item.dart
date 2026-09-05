@@ -38,6 +38,7 @@ import 'package:saver_gallery/saver_gallery.dart';
 import 'package:kazumi/services/player/audio_controller.dart';
 import 'package:kazumi/utils/device.dart';
 import 'package:kazumi/services/platform/display_mode_service.dart';
+import 'package:kazumi/utils/episode_utils.dart';
 import 'package:kazumi/services/platform/player_menu_service.dart';
 
 class PlayerItem extends StatefulWidget {
@@ -398,22 +399,29 @@ class _PlayerItemState extends State<PlayerItem>
     if (videoPageController.loading) return;
     final selection = videoPageController.selectedEpisode;
     final currentRoad = selection.road;
-    final episodes = videoPageController.roadList[currentRoad].data;
-    int targetEpisode;
+    if (currentRoad < 0 ||
+        currentRoad >= videoPageController.roadList.length) {
+      return;
+    }
+    final road = videoPageController.roadList[currentRoad];
+    int? targetEpisode;
+
     if (direction == 'next') {
-      targetEpisode = selection.episode + 1;
+      targetEpisode = EpisodeUtils.findNextEpisodeIndex(
+        road: road,
+        currentEpisode1Based: selection.episode,
+      );
+      if (targetEpisode == null) {
+        KazumiDialog.showToast(message: '已经是最新一集');
+        return;
+      }
     } else if (direction == 'prev') {
+      if (selection.episode <= 1) {
+        KazumiDialog.showToast(message: '已经是第一集');
+        return;
+      }
       targetEpisode = selection.episode - 1;
     } else {
-      return;
-    }
-
-    if (targetEpisode > episodes.length) {
-      KazumiDialog.showToast(message: '已经是最新一集');
-      return;
-    }
-    if (targetEpisode <= 0) {
-      KazumiDialog.showToast(message: '已经是第一集');
       return;
     }
 

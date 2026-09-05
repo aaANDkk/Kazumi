@@ -9,7 +9,6 @@ import 'package:kazumi/services/plugin/rule_engine_models.dart'
 import 'package:kazumi/utils/date_time.dart';
 import 'package:kazumi/utils/device.dart';
 
-/// Continue-watching card: opens playback, nothing else.
 class RecentWatchCard extends StatefulWidget {
   const RecentWatchCard({super.key, required this.item});
 
@@ -20,8 +19,8 @@ class RecentWatchCard extends StatefulWidget {
 }
 
 class _RecentWatchCardState extends State<RecentWatchCard> {
-  static const double _coverWidth = 78;
-  static const double _coverHeight = 104;
+  static const double _coverWidth = 86;
+  static const double _coverHeight = 118;
 
   final HistoryPlaybackService _playbackService =
       inject<HistoryPlaybackService>();
@@ -34,7 +33,14 @@ class _RecentWatchCardState extends State<RecentWatchCard> {
     super.dispose();
   }
 
-  Future<void> _play() async {
+  void _openDetail() {
+    context.pushNamed(
+      '/info/',
+      arguments: widget.item.history.bangumiItem,
+    );
+  }
+
+  Future<void> _play({required bool nextEpisode}) async {
     _cancelToken?.cancel();
     final cancelToken = RuleCancelToken();
     _cancelToken = cancelToken;
@@ -46,6 +52,7 @@ class _RecentWatchCardState extends State<RecentWatchCard> {
     final result = await _playbackService.open(
       widget.item.history,
       cancelToken: cancelToken,
+      nextEpisode: nextEpisode,
     );
     KazumiDialog.dismiss();
     if (!mounted) return;
@@ -68,41 +75,52 @@ class _RecentWatchCardState extends State<RecentWatchCard> {
       borderRadius: BorderRadius.circular(16),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
-        onTap: _play,
+        onTap: _openDetail,
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _cover(colorScheme),
-              const SizedBox(width: 14),
+              _cover(),
+              const SizedBox(width: 12),
               Expanded(
                 child: SizedBox(
                   height: _coverHeight,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    // Titles run one or two lines; splitting the slack keeps
-                    // both cases balanced against the cover height.
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
                         item.title,
                         style: theme.textTheme.titleSmall?.copyWith(
                           color: colorScheme.onSurface,
                           fontWeight: FontWeight.w600,
-                          height: 1.25,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      Text(
-                        '看到 ${item.episodeLabel}',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.play_circle_outline,
+                            size: 14,
+                            color: colorScheme.primary,
+                          ),
+                          const SizedBox(width: 4),
+                          Flexible(
+                            child: Text(
+                              '看到 ${item.episodeLabel}',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: colorScheme.onSurfaceVariant,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 3),
                       Row(
                         children: [
                           _pill(
@@ -110,7 +128,7 @@ class _RecentWatchCardState extends State<RecentWatchCard> {
                             background: colorScheme.secondaryContainer,
                             foreground: colorScheme.onSecondaryContainer,
                           ),
-                          const SizedBox(width: 6),
+                          const SizedBox(width: 4),
                           Flexible(
                             child: _pill(
                               label: item.adapterName,
@@ -118,15 +136,66 @@ class _RecentWatchCardState extends State<RecentWatchCard> {
                               foreground: colorScheme.onSurfaceVariant,
                             ),
                           ),
-                          const SizedBox(width: 8),
+                          const SizedBox(width: 6),
                           Text(
                             formatTimestampToRelativeTime(
                               item.lastWatchTime.millisecondsSinceEpoch ~/ 1000,
                             ),
                             style: theme.textTheme.labelSmall?.copyWith(
                               color: colorScheme.outline,
+                              fontSize: 11,
                             ),
                             maxLines: 1,
+                          ),
+                        ],
+                      ),
+                      const Spacer(),
+                      Row(
+                        children: [
+                          SizedBox(
+                            height: 32,
+                            child: FilledButton.tonalIcon(
+                              style: FilledButton.styleFrom(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 10),
+                                visualDensity: VisualDensity.compact,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              onPressed: () => _play(nextEpisode: false),
+                              icon: const Icon(Icons.play_arrow_rounded,
+                                  size: 16),
+                              label: const Text(
+                                '继续观看',
+                                style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          SizedBox(
+                            height: 32,
+                            child: OutlinedButton.icon(
+                              style: OutlinedButton.styleFrom(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 10),
+                                visualDensity: VisualDensity.compact,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              onPressed: () => _play(nextEpisode: true),
+                              icon: const Icon(Icons.skip_next_rounded,
+                                  size: 16),
+                              label: const Text(
+                                '下一集',
+                                style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500),
+                              ),
+                            ),
                           ),
                         ],
                       ),
@@ -141,32 +210,13 @@ class _RecentWatchCardState extends State<RecentWatchCard> {
     );
   }
 
-  Widget _cover(ColorScheme colorScheme) {
-    return SizedBox(
-      width: _coverWidth,
-      height: _coverHeight,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          NetworkImgLayer(
-            src: widget.item.coverUrl,
-            width: _coverWidth,
-            height: _coverHeight,
-          ),
-          Container(
-            width: 34,
-            height: 34,
-            decoration: BoxDecoration(
-              color: colorScheme.primary.withValues(alpha: 0.92),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              Icons.play_arrow_rounded,
-              size: 22,
-              color: colorScheme.onPrimary,
-            ),
-          ),
-        ],
+  Widget _cover() {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: NetworkImgLayer(
+        src: widget.item.coverUrl,
+        width: _coverWidth,
+        height: _coverHeight,
       ),
     );
   }
@@ -177,17 +227,17 @@ class _RecentWatchCardState extends State<RecentWatchCard> {
     required Color foreground,
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
       decoration: BoxDecoration(
         color: background,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(4),
       ),
       child: Text(
         label,
-        style: Theme.of(context)
-            .textTheme
-            .labelSmall
-            ?.copyWith(color: foreground),
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: foreground,
+              fontSize: 10,
+            ),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),

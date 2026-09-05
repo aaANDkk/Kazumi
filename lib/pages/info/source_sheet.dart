@@ -23,6 +23,7 @@ import 'package:kazumi/services/plugin/plugin_search_service.dart';
 import 'package:kazumi/services/plugin/rule_engine_models.dart'
     show RuleCancelToken;
 import 'package:kazumi/utils/device.dart';
+import 'package:kazumi/utils/episode_utils.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 part 'source_alias_dialog.dart';
@@ -127,12 +128,13 @@ class _SourceSheetState extends State<SourceSheet> {
       onDismiss: cancelToken.cancel,
     );
     try {
-      final roads = await plugin.queryChapterRoads(
+      final rawRoads = await plugin.queryChapterRoads(
         searchItem.src,
         cancelToken: cancelToken,
       );
       if (!mounted || cancelToken.isCancelled) return;
-      if (roads.isEmpty) throw ChapterErrorException(plugin.name);
+      if (rawRoads.isEmpty) throw ChapterErrorException(plugin.name);
+      final roads = rawRoads.map(EpisodeUtils.normalizeRoad).toList();
       KazumiDialog.dismiss();
       context.pushNamed(
         '/video/',

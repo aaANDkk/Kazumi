@@ -13,6 +13,7 @@ import 'package:kazumi/bean/settings/theme_provider.dart';
 import 'package:kazumi/navigation.dart';
 import 'package:kazumi/utils/constants.dart';
 import 'package:kazumi/utils/device.dart';
+import 'package:kazumi/utils/font_manager.dart';
 import 'package:kazumi/utils/theme.dart';
 
 class AppWidget extends StatefulWidget {
@@ -94,10 +95,31 @@ class _AppWidgetState extends State<AppWidget>
       GStorage.getSetting(SettingsKeys.useDynamicColor),
       notify: false,
     );
-    themeProvider.setFontFamily(
-      GStorage.getSetting(SettingsKeys.useSystemFont),
-      notify: false,
-    );
+    final useCustomFont = GStorage.getSetting(SettingsKeys.useCustomFont);
+    final customFontPath = GStorage.getSetting(SettingsKeys.customFontPath);
+    if (useCustomFont && customFontPath.isNotEmpty) {
+      FontManager.loadCustomFont(customFontPath).then((success) {
+        if (success) {
+          themeProvider.setCustomFont(true);
+          final color = _storedThemeColor();
+          final oledEnhance = GStorage.getSetting(SettingsKeys.oledEnhance);
+          final defaultDarkTheme = _buildAppTheme(
+            brightness: Brightness.dark,
+            color: color,
+            fontFamily: themeProvider.currentFontFamily,
+          );
+          themeProvider.setTheme(
+            _buildAppTheme(
+              brightness: Brightness.light,
+              color: color,
+              fontFamily: themeProvider.currentFontFamily,
+            ),
+            oledEnhance ? oledDarkTheme(defaultDarkTheme) : defaultDarkTheme,
+          );
+        }
+      });
+    }
+    themeProvider.setCustomFont(useCustomFont, notify: false);
 
     final color = _storedThemeColor();
     final oledEnhance = GStorage.getSetting(SettingsKeys.oledEnhance);

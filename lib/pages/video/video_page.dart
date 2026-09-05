@@ -205,21 +205,23 @@ class _VideoPageState extends State<VideoPage>
   }
 
   void _initOnlineMode(PlayerController playerController) {
-    videoPageController.historyOffset = 0;
+    if (!videoPageController.hasExplicitTargetEpisode) {
+      videoPageController.historyOffset = 0;
 
-    var progress = historyController.lastWatching(
-        videoPageController.bangumiItem,
-        videoPageController.currentPlugin.name);
-    if (progress != null) {
-      if (videoPageController.roadList.length > progress.road) {
-        if (videoPageController.roadList[progress.road].data.length >=
-            progress.episode) {
-          videoPageController.resetEpisodeState(
-            episode: progress.episode,
-            road: progress.road,
-          );
-          if (playResume) {
-            videoPageController.historyOffset = progress.progress.inSeconds;
+      var progress = historyController.lastWatching(
+          videoPageController.bangumiItem,
+          videoPageController.currentPlugin.name);
+      if (progress != null) {
+        if (videoPageController.roadList.length > progress.road) {
+          if (videoPageController.roadList[progress.road].data.length >=
+              progress.episode) {
+            videoPageController.resetEpisodeState(
+              episode: progress.episode,
+              road: progress.road,
+            );
+            if (playResume) {
+              videoPageController.historyOffset = progress.progress.inSeconds;
+            }
           }
         }
       }
@@ -894,6 +896,35 @@ class _VideoPageState extends State<VideoPage>
               ),
             ),
           ),
+          const Spacer(),
+          if (visibleRoad >= 0 &&
+              visibleRoad < videoPageController.roadList.length)
+            IconButton(
+              icon: const Icon(Icons.swap_vert_rounded, size: 20),
+              tooltip: '反转排序',
+              onPressed: () {
+                final road = videoPageController.roadList[visibleRoad];
+                final currentEpisode =
+                    videoPageController.selectedEpisode.episode;
+                final currentUrl = (currentEpisode - 1 >= 0 &&
+                        currentEpisode - 1 < road.data.length)
+                    ? road.data[currentEpisode - 1]
+                    : null;
+                setState(() {
+                  road.data = road.data.reversed.toList();
+                  road.identifier = road.identifier.reversed.toList();
+                  if (currentUrl != null) {
+                    final newIdx = road.data.indexOf(currentUrl);
+                    if (newIdx != -1) {
+                      videoPageController.resetEpisodeState(
+                        episode: newIdx + 1,
+                        road: visibleRoad,
+                      );
+                    }
+                  }
+                });
+              },
+            ),
         ],
       ),
     );

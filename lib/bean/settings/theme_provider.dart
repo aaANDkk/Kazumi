@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:kazumi/utils/constants.dart';
+import 'package:kazumi/utils/font_manager.dart';
 
 class ThemeProvider extends ChangeNotifier {
   ThemeMode themeMode = ThemeMode.system;
   bool useDynamicColor = false;
   late ThemeData light;
   late ThemeData dark;
-  String? currentFontFamily = customAppFontFamily;
+  String? currentFontFamily; // null means default system font
 
   /// Returns true if the effective theme is dark mode.
   /// Automatically gets platform brightness when themeMode is ThemeMode.system.
@@ -37,6 +38,11 @@ class ThemeProvider extends ChangeNotifier {
 
   void setFontFamily(bool useSystemFont, {bool notify = true}) {
     currentFontFamily = useSystemFont ? null : customAppFontFamily;
+    if (notify) notifyListeners();
+  }
+
+  void setCustomFont(bool useCustomFont, {bool notify = true}) {
+    currentFontFamily = useCustomFont ? FontManager.customFontFamily : null;
     if (notify) notifyListeners();
   }
 }

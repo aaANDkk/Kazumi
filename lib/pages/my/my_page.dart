@@ -150,7 +150,7 @@ class _MyPageState extends State<MyPage> {
           crossAxisCount: crossCount,
           crossAxisSpacing: StyleString.cardSpace,
           mainAxisSpacing: StyleString.cardSpace,
-          mainAxisExtent: 128,
+          mainAxisExtent: 148,
         ),
         itemCount: count,
         itemBuilder: (context, index) {
