@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/services.dart';
 import 'package:kazumi/services/logging/logger.dart';
@@ -22,7 +23,10 @@ class FontManager {
       }
       final bytes = await file.readAsBytes();
       final fontLoader = FontLoader(customFontFamily);
-      fontLoader.addFont(Future.value(ByteData.sublistView(bytes)));
+      fontLoader.addFont(Future.value(
+        bytes.buffer.asByteData(bytes.offsetInBytes, bytes.lengthInBytes),
+      ));
+
       await fontLoader.load();
       _isLoaded = true;
       KazumiLogger().i('FontManager: custom font loaded from $filePath');

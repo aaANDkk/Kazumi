@@ -28,7 +28,6 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
   late bool oledEnhance;
   late bool useDynamicColor;
   late bool showWindowButton;
-  late bool useSystemFont;
   late bool useCustomFont;
   late String customFontName;
   late String customFontPath;
@@ -43,7 +42,6 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
     oledEnhance = GStorage.getSetting(SettingsKeys.oledEnhance);
     useDynamicColor = GStorage.getSetting(SettingsKeys.useDynamicColor);
     showWindowButton = GStorage.getSetting(SettingsKeys.showWindowButton);
-    useSystemFont = GStorage.getSetting(SettingsKeys.useSystemFont);
     useCustomFont = GStorage.getSetting(SettingsKeys.useCustomFont);
     customFontName = GStorage.getSetting(SettingsKeys.customFontName);
     customFontPath = GStorage.getSetting(SettingsKeys.customFontPath);
@@ -72,6 +70,7 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
     if (enable) {
       if (customFontPath.isEmpty || !File(customFontPath).existsSync()) {
         final success = await FontManager.pickAndApplyCustomFont();
+        if (!mounted) return;
         if (success) {
           useCustomFont = true;
           customFontName = GStorage.getSetting(SettingsKeys.customFontName);
@@ -85,6 +84,7 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
         }
       } else {
         final success = await FontManager.loadCustomFont(customFontPath);
+        if (!mounted) return;
         if (success) {
           useCustomFont = true;
           await GStorage.putSetting(SettingsKeys.useCustomFont, true);
@@ -98,6 +98,7 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
       await FontManager.disableCustomFont();
       themeProvider.setCustomFont(false);
       _applyThemeFont();
+      if (!mounted) return;
       setState(() {});
       KazumiDialog.showToast(message: '已切换为系统默认字体');
     }
@@ -105,6 +106,7 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
 
   Future<void> _pickNewFont() async {
     final success = await FontManager.pickAndApplyCustomFont();
+    if (!mounted) return;
     if (success) {
       useCustomFont = true;
       customFontName = GStorage.getSetting(SettingsKeys.customFontName);

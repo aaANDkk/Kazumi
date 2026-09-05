@@ -404,17 +404,18 @@ class _PlayerItemState extends State<PlayerItem>
       return;
     }
     final road = videoPageController.roadList[currentRoad];
-    int? targetEpisode;
+    final int targetEpisode;
 
     if (direction == 'next') {
-      targetEpisode = EpisodeUtils.findNextEpisodeIndex(
+      final next = EpisodeUtils.findNextEpisodeIndex(
         road: road,
         currentEpisode1Based: selection.episode,
       );
-      if (targetEpisode == null) {
+      if (next == null) {
         KazumiDialog.showToast(message: '已经是最新一集');
         return;
       }
+      targetEpisode = next;
     } else if (direction == 'prev') {
       if (selection.episode <= 1) {
         KazumiDialog.showToast(message: '已经是第一集');
