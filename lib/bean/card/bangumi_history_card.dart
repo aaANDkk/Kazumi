@@ -24,11 +24,15 @@ class BangumiHistoryCardV extends StatefulWidget {
     required this.historyItem,
     this.showDelete = false,
     this.onDeleted,
+    this.margin = const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+    this.enableDismiss = true,
   });
 
   final History historyItem;
   final bool showDelete;
   final VoidCallback? onDeleted;
+  final EdgeInsetsGeometry margin;
+  final bool enableDismiss;
 
   @override
   State<BangumiHistoryCardV> createState() => _BangumiHistoryCardVState();
@@ -103,34 +107,15 @@ class _BangumiHistoryCardVState extends State<BangumiHistoryCardV> {
         : widget.historyItem.lastWatchEpisodeName;
     final String sourceText = _historySourceText(widget.historyItem.entryKind);
 
-    return Dismissible(
-      key: ValueKey(widget.historyItem.key),
-      direction: DismissDirection.endToStart,
-      onDismissed: (_) {
-        widget.onDeleted?.call();
-      },
-      background: Container(
-        alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: 24),
-        margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-        decoration: BoxDecoration(
-          color: colorScheme.errorContainer,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Icon(
-          Icons.delete_outline,
-          color: colorScheme.onErrorContainer,
-        ),
+    final cardWidget = Card(
+      elevation: 0,
+      margin: widget.margin,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
       ),
-      child: Card(
-        elevation: 0,
-        margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        clipBehavior: Clip.antiAlias,
-        color: colorScheme.surfaceContainerLow,
-        child: InkWell(
+      clipBehavior: Clip.antiAlias,
+      color: colorScheme.surfaceContainerLow,
+      child: InkWell(
           onTap: _onCardTap,
           child: Padding(
             padding: const EdgeInsets.all(12),
@@ -231,7 +216,9 @@ class _BangumiHistoryCardVState extends State<BangumiHistoryCardV> {
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Text(
-                                '$sourceText · ${widget.historyItem.adapterName}',
+                                widget.historyItem.adapterName.isNotEmpty
+                                    ? '$sourceText · ${widget.historyItem.adapterName}'
+                                    : sourceText,
                                 style: theme.textTheme.labelSmall?.copyWith(
                                   color: colorScheme.onSurfaceVariant,
                                   fontSize: 10,
@@ -322,6 +309,34 @@ class _BangumiHistoryCardVState extends State<BangumiHistoryCardV> {
           ),
         ),
       ),
+    );
+
+    if (!widget.enableDismiss) {
+      return cardWidget;
+    }
+
+    return Dismissible(
+      key: ValueKey(widget.historyItem.key),
+      direction: widget.onDeleted != null
+          ? DismissDirection.endToStart
+          : DismissDirection.none,
+      onDismissed: (_) {
+        widget.onDeleted?.call();
+      },
+      background: Container(
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: 24),
+        margin: widget.margin,
+        decoration: BoxDecoration(
+          color: colorScheme.errorContainer,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Icon(
+          Icons.delete_outline,
+          color: colorScheme.onErrorContainer,
+        ),
+      ),
+      child: cardWidget,
     );
   }
 }
