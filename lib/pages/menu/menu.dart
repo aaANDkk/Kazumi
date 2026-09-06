@@ -144,7 +144,7 @@ class _ScaffoldMenu extends State<ScaffoldMenu> with RouteAware {
           ),
           NavigationDestination(
             selectedIcon: Icon(Icons.favorite),
-            icon: Icon(Icons.favorite_outlined),
+            icon: Icon(Icons.favorite_border),
             label: '追番',
           ),
           NavigationDestination(
