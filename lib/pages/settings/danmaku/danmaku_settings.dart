@@ -360,20 +360,6 @@ class _DanmakuSettingsPageState extends State<DanmakuSettingsPage> {
                   title: Text('弹幕颜色'),
                   initialValue: danmakuColor,
                 ),
-                SettingsTile(
-                  leading: Icons.font_download_rounded,
-                  title: const Text('弹幕字体'),
-                  description: Text(
-                    GStorage.getSetting(SettingsKeys.useCustomFont)
-                        ? (GStorage.getSetting(SettingsKeys.customFontName).isNotEmpty
-                            ? '跟随自定义字体: ${GStorage.getSetting(SettingsKeys.customFontName)}'
-                            : '跟随自定义字体')
-                        : '跟随系统默认字体',
-                  ),
-                  onPressed: (_) {
-                    context.pushNamed('/settings/theme');
-                  },
-                ),
                 SettingsSliderTile(
                   leading: Icons.format_size_rounded,
                   title: Text('字体大小'),
@@ -403,6 +389,20 @@ class _DanmakuSettingsPageState extends State<DanmakuSettingsPage> {
                   valueLabel: '${(defaultDanmakuOpacity * 100).round()}%',
                   onChanged: (value) => updateDanmakuOpacity(
                       double.parse(value.toStringAsFixed(2))),
+                ),
+                SettingsTile(
+                  leading: Icons.font_download_rounded,
+                  title: const Text('弹幕字体'),
+                  description: Text(
+                    GStorage.getSetting(SettingsKeys.useCustomFont)
+                        ? (GStorage.getSetting(SettingsKeys.customFontName).isNotEmpty
+                            ? '跟随自定义字体: ${GStorage.getSetting(SettingsKeys.customFontName)}'
+                            : '跟随自定义字体')
+                        : '跟随系统默认字体',
+                  ),
+                  onPressed: (_) {
+                    context.pushNamed('/settings/theme');
+                  },
                 ),
               ],
             ),

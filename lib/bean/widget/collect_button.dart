@@ -8,6 +8,10 @@ class CollectButton extends StatefulWidget {
     super.key,
     required this.bangumiItem,
     this.color = Colors.white,
+    this.iconSize,
+    this.padding,
+    this.constraints,
+    this.style,
     this.onOpen,
     this.onClose,
   }) {
@@ -18,6 +22,10 @@ class CollectButton extends StatefulWidget {
     super.key,
     required this.bangumiItem,
     this.color = Colors.white,
+    this.iconSize,
+    this.padding,
+    this.constraints,
+    this.style,
     this.onOpen,
     this.onClose,
   }) {
@@ -26,6 +34,10 @@ class CollectButton extends StatefulWidget {
 
   final BangumiItem bangumiItem;
   final Color color;
+  final double? iconSize;
+  final EdgeInsetsGeometry? padding;
+  final BoxConstraints? constraints;
+  final ButtonStyle? style;
   late final bool isExtended;
   final void Function()? onOpen;
   final void Function()? onClose;
@@ -105,6 +117,10 @@ class _CollectButtonState extends State<CollectButton> {
           );
         } else {
           return IconButton(
+            style: widget.style,
+            padding: widget.padding,
+            constraints: widget.constraints,
+            iconSize: widget.iconSize,
             onPressed: () {
               if (controller.isOpen) {
                 controller.close();
@@ -115,6 +131,7 @@ class _CollectButtonState extends State<CollectButton> {
             tooltip: getTypeStringByInt(collectType),
             icon: Icon(
               getIconByInt(collectType),
+              size: widget.iconSize,
               color: widget.color,
             ),
           );

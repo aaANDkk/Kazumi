@@ -158,6 +158,16 @@ class _BangumiHistoryCardVState extends State<BangumiHistoryCardV> {
                                     width: 32,
                                     height: 32,
                                     child: CollectButton(
+                                      iconSize: 20,
+                                      padding: EdgeInsets.zero,
+                                      constraints: const BoxConstraints(),
+                                      style: IconButton.styleFrom(
+                                        padding: EdgeInsets.zero,
+                                        minimumSize: const Size(32, 32),
+                                        fixedSize: const Size(32, 32),
+                                        tapTargetSize:
+                                            MaterialTapTargetSize.shrinkWrap,
+                                      ),
                                       onClose: () {
                                         FocusScope.of(context).unfocus();
                                       },
@@ -174,6 +184,14 @@ class _BangumiHistoryCardVState extends State<BangumiHistoryCardV> {
                                 height: 32,
                                 child: IconButton(
                                   padding: EdgeInsets.zero,
+                                  constraints: const BoxConstraints(),
+                                  style: IconButton.styleFrom(
+                                    padding: EdgeInsets.zero,
+                                    minimumSize: const Size(32, 32),
+                                    fixedSize: const Size(32, 32),
+                                    tapTargetSize:
+                                        MaterialTapTargetSize.shrinkWrap,
+                                  ),
                                   icon: Icon(
                                     Icons.delete_outline,
                                     size: 20,
