@@ -269,11 +269,15 @@ class HistoryRepository implements IHistoryRepository {
             identity.road,
             progress.inMilliseconds,
             updatedAtMs: nowMs,
+            totalDurationInMilli: duration.inMilliseconds,
           );
         } else {
           prog.road = identity.road;
           prog.progress = progress;
           prog.updatedAtMs = nowMs;
+          if (duration.inMilliseconds > 0) {
+            prog.totalDurationInMilli = duration.inMilliseconds;
+          }
         }
 
         // 保存到存储

@@ -145,7 +145,7 @@ class _HistoryPageState extends State<HistoryPage> {
               mainAxisSpacing: 2,
               crossAxisSpacing: StyleString.cardSpace,
               crossAxisCount: crossCount,
-              mainAxisExtent: 148,
+              mainAxisExtent: 150,
             ),
             delegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {

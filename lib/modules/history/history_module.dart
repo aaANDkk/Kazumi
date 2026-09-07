@@ -154,15 +154,31 @@ class Progress {
   @HiveField(3, defaultValue: 0)
   int updatedAtMs;
 
+  @HiveField(4, defaultValue: 0)
+  int totalDurationInMilli;
+
   Duration get progress => Duration(milliseconds: _progressInMilli);
 
   set progress(Duration d) => _progressInMilli = d.inMilliseconds;
+
+  Duration get totalDuration => Duration(milliseconds: totalDurationInMilli);
+
+  set totalDuration(Duration d) => totalDurationInMilli = d.inMilliseconds;
+
+  double get progressRatio {
+    if (totalDurationInMilli <= 0 || _progressInMilli <= 0) {
+      return 0.0;
+    }
+    final ratio = _progressInMilli / totalDurationInMilli;
+    return ratio.clamp(0.0, 1.0);
+  }
 
   Progress(
     this.episode,
     this.road,
     this._progressInMilli, {
     this.updatedAtMs = 0,
+    this.totalDurationInMilli = 0,
   });
 
   int effectiveUpdatedAtMs(DateTime fallback) {

@@ -870,6 +870,7 @@ class HistorySyncCodec {
       (json['road'] as num).toInt(),
       (json['progressMs'] as num).toInt(),
       updatedAtMs: (json['updatedAtMs'] as num?)?.toInt() ?? 0,
+      totalDurationInMilli: (json['totalDurationMs'] as num?)?.toInt() ?? 0,
     );
   }
 
@@ -879,6 +880,7 @@ class HistorySyncCodec {
       'road': progress.road,
       'progressMs': progress.progress.inMilliseconds,
       'updatedAtMs': progress.updatedAtMs,
+      'totalDurationMs': progress.totalDurationInMilli,
     };
   }
 

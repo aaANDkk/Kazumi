@@ -106,6 +106,9 @@ class _BangumiHistoryCardVState extends State<BangumiHistoryCardV> {
         ? '第${widget.historyItem.lastWatchEpisode}话'
         : widget.historyItem.lastWatchEpisodeName;
     final String sourceText = _historySourceText(widget.historyItem.entryKind);
+    final currentProgress =
+        widget.historyItem.progresses[widget.historyItem.lastWatchEpisode];
+    final progressRatio = currentProgress?.progressRatio ?? 0.0;
 
     final cardWidget = Card(
       elevation: 0,
@@ -266,6 +269,24 @@ class _BangumiHistoryCardVState extends State<BangumiHistoryCardV> {
                             ),
                           ],
                         ),
+                        if (progressRatio > 0.0) ...[
+                          const SizedBox(height: 6),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(2),
+                            child: SizedBox(
+                              width: double.infinity,
+                              child: LinearProgressIndicator(
+                                value: progressRatio,
+                                minHeight: 3,
+                                backgroundColor:
+                                    colorScheme.surfaceContainerHighest,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  colorScheme.primary,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                         const Spacer(),
                         Row(
                           children: [
