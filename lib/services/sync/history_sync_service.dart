@@ -51,12 +51,15 @@ class HistorySyncService {
     required int road,
     required int progressMs,
     int? updatedAt,
+    int? totalDurationMs,
   }) async {
     final deviceId = await getDeviceId();
     final effectiveUpdatedAt =
         updatedAt ?? history.lastWatchTime.millisecondsSinceEpoch;
     final progressSeq = await _nextSeq();
     final watchStateSeq = await _nextSeq();
+    final effectiveDurationMs = totalDurationMs ??
+        history.progresses[episode]?.totalDurationInMilli;
     final events = [
       HistorySyncEvent.upsertProgress(
         deviceId: deviceId,
@@ -66,6 +69,7 @@ class HistorySyncService {
         road: road,
         progressMs: progressMs,
         updatedAt: effectiveUpdatedAt,
+        totalDurationMs: effectiveDurationMs,
       ),
       HistorySyncEvent.upsertWatchState(
         deviceId: deviceId,
@@ -153,6 +157,7 @@ class HistorySyncService {
             episode: progress.episode,
             road: progress.road,
             progressMs: progress.progress.inMilliseconds,
+            totalDurationMs: progress.totalDurationInMilli,
             lastSrc: history.lastSrc,
             lastWatchEpisodeName: history.lastWatchEpisodeName,
             entryKind: history.entryKind,
@@ -190,15 +195,44 @@ class HistorySyncService {
         snapshot: snapshot,
         events: buildStateEventsFromHistories(GStorage.histories.values),
       );
+      for (final history in reconciled.histories) {
+        final localHistory = GStorage.histories.get(history.key);
+        if (localHistory != null) {
+          for (final entry in history.progresses.entries) {
+            if (entry.value.totalDurationInMilli <= 0) {
+              final localProgress = localHistory.progresses[entry.key];
+              if (localProgress != null &&
+                  localProgress.totalDurationInMilli > 0) {
+                entry.value.totalDurationInMilli =
+                    localProgress.totalDurationInMilli;
+              }
+            }
+          }
+        }
+      }
       await _applySnapshotToLocal(reconciled);
       return reconciled;
     });
   }
 
   Future<void> _applySnapshotToLocal(HistorySyncSnapshot snapshot) async {
-    final historiesByKey = {
-      for (final history in snapshot.histories) history.key: history,
-    };
+    final historiesByKey = <String, History>{};
+    for (final history in snapshot.histories) {
+      final localHistory = GStorage.histories.get(history.key);
+      if (localHistory != null) {
+        for (final entry in history.progresses.entries) {
+          if (entry.value.totalDurationInMilli <= 0) {
+            final localProgress = localHistory.progresses[entry.key];
+            if (localProgress != null &&
+                localProgress.totalDurationInMilli > 0) {
+              entry.value.totalDurationInMilli =
+                  localProgress.totalDurationInMilli;
+            }
+          }
+        }
+      }
+      historiesByKey[history.key] = history;
+    }
     final staleKeys = GStorage.histories.keys
         .where((key) => !historiesByKey.containsKey(key))
         .toList();

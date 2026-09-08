@@ -53,6 +53,7 @@ class HistorySyncEvent {
     this.episode,
     this.road,
     this.progressMs,
+    this.totalDurationMs,
     this.lastSrc,
     this.lastWatchEpisodeName,
     this.entryKind,
@@ -71,6 +72,7 @@ class HistorySyncEvent {
   final int? episode;
   final int? road;
   final int? progressMs;
+  final int? totalDurationMs;
   final String? lastSrc;
   final String? lastWatchEpisodeName;
   final String? entryKind;
@@ -82,6 +84,47 @@ class HistorySyncEvent {
         eventId: eventId,
       );
 
+  HistorySyncEvent copyWith({
+    String? eventId,
+    String? deviceId,
+    int? seq,
+    HistorySyncOp? op,
+    int? updatedAt,
+    String? entityKey,
+    BangumiItem? bangumiItem,
+    String? adapterName,
+    int? episode,
+    int? road,
+    int? progressMs,
+    int? totalDurationMs,
+    String? lastSrc,
+    String? lastWatchEpisodeName,
+    String? entryKind,
+    String? episodePageUrl,
+    bool? carriesWatchState,
+  }) {
+    return HistorySyncEvent(
+      eventId: eventId ?? this.eventId,
+      deviceId: deviceId ?? this.deviceId,
+      seq: seq ?? this.seq,
+      op: op ?? this.op,
+      updatedAt: updatedAt ?? this.updatedAt,
+      entityKey: entityKey ?? this.entityKey,
+      bangumiItem: bangumiItem ?? this.bangumiItem,
+      adapterName: adapterName ?? this.adapterName,
+      episode: episode ?? this.episode,
+      road: road ?? this.road,
+      progressMs: progressMs ?? this.progressMs,
+      totalDurationMs: totalDurationMs ?? this.totalDurationMs,
+      lastSrc: lastSrc ?? this.lastSrc,
+      lastWatchEpisodeName:
+          lastWatchEpisodeName ?? this.lastWatchEpisodeName,
+      entryKind: entryKind ?? this.entryKind,
+      episodePageUrl: episodePageUrl ?? this.episodePageUrl,
+      carriesWatchState: carriesWatchState ?? this.carriesWatchState,
+    );
+  }
+
   factory HistorySyncEvent.upsertProgress({
     required String deviceId,
     required int seq,
@@ -90,6 +133,7 @@ class HistorySyncEvent {
     required int road,
     required int progressMs,
     required int updatedAt,
+    int? totalDurationMs,
   }) {
     return HistorySyncEvent(
       eventId: '$deviceId:$seq',
@@ -103,6 +147,8 @@ class HistorySyncEvent {
       episode: episode,
       road: road,
       progressMs: progressMs,
+      totalDurationMs: totalDurationMs ??
+          history.progresses[episode]?.totalDurationInMilli,
       entryKind: history.entryKind,
       episodePageUrl: history.episodePageUrl,
     );
@@ -180,6 +226,7 @@ class HistorySyncEvent {
       episode: (json['episode'] as num?)?.toInt(),
       road: (json['road'] as num?)?.toInt(),
       progressMs: (json['progressMs'] as num?)?.toInt(),
+      totalDurationMs: (json['totalDurationMs'] as num?)?.toInt(),
       lastSrc: json['lastSrc'] as String?,
       lastWatchEpisodeName: json['lastWatchEpisodeName'] as String?,
       entryKind: json['entryKind'] as String?,
@@ -204,6 +251,7 @@ class HistorySyncEvent {
       if (episode != null) 'episode': episode,
       if (road != null) 'road': road,
       if (progressMs != null) 'progressMs': progressMs,
+      if (totalDurationMs != null) 'totalDurationMs': totalDurationMs,
       if (lastSrc != null) 'lastSrc': lastSrc,
       if (lastWatchEpisodeName != null)
         'lastWatchEpisodeName': lastWatchEpisodeName,
@@ -460,13 +508,26 @@ class HistorySyncState {
     final progressVersion = episodeVersions[episode];
     if (progressVersion == null ||
         HistorySyncVersion.compare(event.version, progressVersion) >= 0) {
+      final existingProgress = current.progresses[episode];
+      final duration = (event.totalDurationMs != null && event.totalDurationMs! > 0)
+          ? event.totalDurationMs!
+          : (existingProgress?.totalDurationInMilli ?? 0);
       current.progresses[episode] = Progress(
         episode,
         road,
         progressMs,
         updatedAtMs: event.updatedAt,
+        totalDurationInMilli: duration,
       );
       episodeVersions[episode] = event.version;
+    } else {
+      final existingProgress = current.progresses[episode];
+      if (existingProgress != null &&
+          existingProgress.totalDurationInMilli <= 0 &&
+          event.totalDurationMs != null &&
+          event.totalDurationMs! > 0) {
+        existingProgress.totalDurationInMilli = event.totalDurationMs!;
+      }
     }
     histories[entityKey] = current;
     deletedVersions.remove(entityKey);
@@ -688,7 +749,7 @@ class HistorySyncStreamMerger {
     switch (event.op) {
       case HistorySyncOp.upsertProgress:
         final entityKey = _upsertEntityKey(event);
-        _keepLatest(_progressEvents, '$entityKey:${event.episode!}', event);
+        _keepLatestProgress('$entityKey:${event.episode!}', event);
         if (_carriesLegacyWatchState(event)) {
           _keepLatest(_watchStateEvents, entityKey, event);
         }
@@ -748,6 +809,29 @@ class HistorySyncStreamMerger {
     if (current == null ||
         HistorySyncVersion.compare(candidate.version, current.version) > 0) {
       events[key] = candidate;
+    }
+  }
+
+  void _keepLatestProgress(
+    String key,
+    HistorySyncEvent candidate,
+  ) {
+    final current = _progressEvents[key];
+    if (current == null) {
+      _progressEvents[key] = candidate;
+    } else if (HistorySyncVersion.compare(candidate.version, current.version) > 0) {
+      final duration = (candidate.totalDurationMs != null &&
+              candidate.totalDurationMs! > 0)
+          ? candidate.totalDurationMs
+          : current.totalDurationMs;
+      _progressEvents[key] = candidate.copyWith(totalDurationMs: duration);
+    } else {
+      if ((current.totalDurationMs == null || current.totalDurationMs! <= 0) &&
+          candidate.totalDurationMs != null &&
+          candidate.totalDurationMs! > 0) {
+        _progressEvents[key] =
+            current.copyWith(totalDurationMs: candidate.totalDurationMs);
+      }
     }
   }
 

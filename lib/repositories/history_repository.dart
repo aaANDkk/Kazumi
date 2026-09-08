@@ -13,6 +13,7 @@ typedef HistoryProgressSyncAppender = Future<void> Function({
   required int road,
   required int progressMs,
   required int updatedAt,
+  int? totalDurationMs,
 });
 
 typedef HistoryDeleteSyncAppender = Future<void> Function(History history);
@@ -121,6 +122,7 @@ class HistoryRepository implements IHistoryRepository {
     required int road,
     required int progressMs,
     required int updatedAt,
+    int? totalDurationMs,
   }) async {
     final historySyncService = HistorySyncService();
     await historySyncService.appendSafely(
@@ -130,6 +132,7 @@ class HistoryRepository implements IHistoryRepository {
         road: road,
         progressMs: progressMs,
         updatedAt: updatedAt,
+        totalDurationMs: totalDurationMs,
       ),
     );
   }
@@ -291,6 +294,7 @@ class HistoryRepository implements IHistoryRepository {
           road: identity.road,
           progressMs: progress.inMilliseconds,
           updatedAt: nowMs,
+          totalDurationMs: prog.totalDurationInMilli,
         );
       } catch (e, stackTrace) {
         KazumiLogger().e(

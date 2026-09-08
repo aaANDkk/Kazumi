@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:kazumi/modules/bangumi/bangumi_item.dart';
 import 'package:kazumi/modules/history/history_module.dart';
 import 'package:kazumi/repositories/history_repository.dart';
@@ -8,12 +10,25 @@ part 'history_controller.g.dart';
 class HistoryController = _HistoryController with _$HistoryController;
 
 abstract class _HistoryController with Store {
-  _HistoryController(this._historyRepository);
+  _HistoryController(this._historyRepository) {
+    _historySubscription = _historyRepository.changes.listen((_) {
+      _scheduleRefresh();
+    });
+  }
 
   final IHistoryRepository _historyRepository;
+  StreamSubscription<void>? _historySubscription;
+  Timer? _refreshDebounceTimer;
 
   @observable
   ObservableList<History> histories = ObservableList<History>();
+
+  void _scheduleRefresh() {
+    _refreshDebounceTimer?.cancel();
+    _refreshDebounceTimer = Timer(const Duration(milliseconds: 200), () {
+      init();
+    });
+  }
 
   void init() {
     final temp = _historyRepository.getAllHistories();

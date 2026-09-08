@@ -531,6 +531,77 @@ void main() {
       expect(mergedHistory.progresses[7]!.progress.inSeconds, 7);
     });
 
+    test('upsertProgress preserves and propagates totalDurationMs', () {
+      final history = History(
+        _item(1),
+        5,
+        'plugin',
+        DateTime.fromMillisecondsSinceEpoch(1000),
+        'https://example.com/video',
+        'EP5',
+      );
+      history.progresses[5] = Progress(5, 0, 5 * 1000, totalDurationInMilli: 24 * 60 * 1000);
+
+      final event = HistorySyncEvent.upsertProgress(
+        deviceId: 'device-a',
+        seq: 1,
+        history: history,
+        episode: 5,
+        road: 0,
+        progressMs: 10 * 1000,
+        updatedAt: 2000,
+        totalDurationMs: 24 * 60 * 1000,
+      );
+
+      final jsonLines = HistorySyncCodec.eventsToJsonLines([event]);
+      final restored = HistorySyncCodec.eventsFromJsonLines(jsonLines).single;
+      expect(restored.totalDurationMs, 24 * 60 * 1000);
+
+      final merged = HistorySyncMerger.merge(
+        snapshot: HistorySyncSnapshot.empty(),
+        events: [restored],
+      );
+
+      final mergedProgress = merged.histories.single.progresses[5]!;
+      expect(mergedProgress.progress.inSeconds, 10);
+      expect(mergedProgress.totalDurationInMilli, 24 * 60 * 1000);
+      expect(mergedProgress.progressRatio, closeTo(10 / (24 * 60), 0.001));
+    });
+
+    test('upsertProgress retains existing totalDurationInMilli if incoming event lacks it', () {
+      final history = History(
+        _item(1),
+        5,
+        'plugin',
+        DateTime.fromMillisecondsSinceEpoch(1000),
+        'https://example.com/video',
+        'EP5',
+      );
+      history.progresses[5] = Progress(5, 0, 5 * 1000, totalDurationInMilli: 24 * 60 * 1000);
+
+      // An event with no total duration (e.g. from an older client)
+      final eventWithoutDuration = HistorySyncEvent.upsertProgress(
+        deviceId: 'device-b',
+        seq: 1,
+        history: history,
+        episode: 5,
+        road: 0,
+        progressMs: 15 * 1000,
+        updatedAt: 3000,
+        totalDurationMs: 0,
+      );
+
+      final merged = HistorySyncMerger.merge(
+        snapshot: HistorySyncSnapshot.fromHistories([history]),
+        events: [eventWithoutDuration],
+      );
+
+      final mergedProgress = merged.histories.single.progresses[5]!;
+      expect(mergedProgress.progress.inSeconds, 15);
+      // Existing total duration is retained
+      expect(mergedProgress.totalDurationInMilli, 24 * 60 * 1000);
+    });
+
     test('upsertWatchState updates latest episode metadata', () {
       final history = History(
         _item(1),
