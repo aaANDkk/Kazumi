@@ -267,13 +267,14 @@ class HistoryRepository implements IHistoryRepository {
         // 更新观看进度
         var prog = history.progresses[episode];
         if (prog == null) {
-          history.progresses[episode] = Progress(
+          prog = Progress(
             episode,
             identity.road,
             progress.inMilliseconds,
             updatedAtMs: nowMs,
             totalDurationInMilli: duration.inMilliseconds,
           );
+          history.progresses[episode] = prog;
         } else {
           prog.road = identity.road;
           prog.progress = progress;
@@ -282,6 +283,8 @@ class HistoryRepository implements IHistoryRepository {
             prog.totalDurationInMilli = duration.inMilliseconds;
           }
         }
+
+        final currentProgress = prog;
 
         // 保存到存储
         await _historiesBox.put(history.key, history);
@@ -294,7 +297,7 @@ class HistoryRepository implements IHistoryRepository {
           road: identity.road,
           progressMs: progress.inMilliseconds,
           updatedAt: nowMs,
-          totalDurationMs: prog.totalDurationInMilli,
+          totalDurationMs: currentProgress.totalDurationInMilli,
         );
       } catch (e, stackTrace) {
         KazumiLogger().e(
