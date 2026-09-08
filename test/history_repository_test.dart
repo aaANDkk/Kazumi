@@ -237,6 +237,7 @@ void main() {
           required road,
           required progressMs,
           required updatedAt,
+          totalDurationMs,
         }) async {
           appendStarted.complete();
           await allowAppendToFinish.future;
@@ -281,6 +282,7 @@ Future<void> _noopHistorySync({
   required int road,
   required int progressMs,
   required int updatedAt,
+  int? totalDurationMs,
 }) async {}
 
 Future<void> _noopDeleteSync(History history) async {}

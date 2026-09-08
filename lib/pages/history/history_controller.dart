@@ -84,4 +84,9 @@ abstract class _HistoryController with Store {
     await _historyRepository.clearAllHistories();
     histories.clear();
   }
+
+  void dispose() {
+    _refreshDebounceTimer?.cancel();
+    _historySubscription?.cancel();
+  }
 }
