@@ -4,7 +4,6 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:kazumi/bean/widget/content_section.dart';
 import 'package:kazumi/bean/widget/empty_state_widget.dart';
 import 'package:kazumi/pages/my/my_controller.dart';
-import 'package:kazumi/utils/theme.dart';
 
 class DanmakuShieldEditor extends StatefulWidget {
   const DanmakuShieldEditor({
@@ -54,7 +53,7 @@ class _DanmakuShieldEditorState extends State<DanmakuShieldEditor> {
               decoration: InputDecoration(
                 hintText: '关键词或 /正则表达式/',
                 border:
-                    SuperellipseInputBorder(borderRadius: BorderRadius.circular(16)),
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
                 suffixIcon: IconButton(
                   tooltip: '添加规则',
                   onPressed: _addRule,

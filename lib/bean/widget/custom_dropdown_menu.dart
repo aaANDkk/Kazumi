@@ -57,10 +57,7 @@ class CustomDropdownMenu extends StatelessWidget {
             top: offset.dy + buttonSize.height + gap,
             child: Material(
               elevation: 6,
-              shape: RoundedSuperellipseBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              clipBehavior: Clip.antiAlias,
+              borderRadius: BorderRadius.circular(8),
               color: theme.colorScheme.surface,
               surfaceTintColor: Colors.transparent,
               shadowColor: Colors.black26,

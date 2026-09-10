@@ -158,11 +158,9 @@ class _SyncServiceCard extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(24),
-      decoration: ShapeDecoration(
+      decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainerLow,
-        shape: RoundedSuperellipseBorder(
-          borderRadius: BorderRadius.circular(28),
-        ),
+        borderRadius: BorderRadius.circular(28),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -235,11 +233,9 @@ class _SyncStatusChip extends StatelessWidget {
     };
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-      decoration: ShapeDecoration(
+      decoration: BoxDecoration(
         color: background,
-        shape: RoundedSuperellipseBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

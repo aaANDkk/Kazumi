@@ -50,7 +50,7 @@ Future<T?> showAdaptiveBottomSheet<T>({
   );
 }
 
-const ShapeBorder _materialSheetShape = RoundedSuperellipseBorder(
+const ShapeBorder _materialSheetShape = RoundedRectangleBorder(
   borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
 );
 

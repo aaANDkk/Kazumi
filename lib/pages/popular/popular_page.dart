@@ -200,9 +200,7 @@ class _PopularPageState extends State<PopularPage> {
                         final bool isTrend = popularController.currentTag == '';
                         return InkWell(
                           key: selectorKey,
-                          customBorder: RoundedSuperellipseBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
+                          borderRadius: BorderRadius.circular(8),
                           onTap: showTagMenu,
                           child: Row(
                             mainAxisSize: MainAxisSize.min,

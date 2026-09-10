@@ -25,11 +25,9 @@ class _TimelineWeekSelector extends StatelessWidget {
       final minTabWidth = (scaler.scale(14) * 2 + 16).clamp(48.0, 112.0);
       final scrollable = constraints.maxWidth - 8 < minTabWidth * 7;
       return DecoratedBox(
-        decoration: ShapeDecoration(
+        decoration: BoxDecoration(
           color: colors.surfaceContainerLow,
-          shape: RoundedSuperellipseBorder(
-            borderRadius: BorderRadius.circular(28),
-          ),
+          borderRadius: BorderRadius.circular(28),
         ),
         child: Padding(
           padding: const EdgeInsets.all(4),
@@ -38,11 +36,9 @@ class _TimelineWeekSelector extends StatelessWidget {
             tabAlignment: scrollable ? TabAlignment.start : TabAlignment.fill,
             dividerHeight: 0,
             indicatorSize: TabBarIndicatorSize.tab,
-            indicator: ShapeDecoration(
+            indicator: BoxDecoration(
               color: colors.primary,
-              shape: RoundedSuperellipseBorder(
-                borderRadius: BorderRadius.circular(24),
-              ),
+              borderRadius: BorderRadius.circular(24),
             ),
             indicatorAnimation: TabIndicatorAnimation.elastic,
             labelColor: colors.onPrimary,

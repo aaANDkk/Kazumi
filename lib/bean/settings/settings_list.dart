@@ -266,11 +266,9 @@ class SettingsSliderTile extends StatelessWidget {
               Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: ShapeDecoration(
+                decoration: BoxDecoration(
                   color: colorScheme.secondaryContainer,
-                  shape: RoundedSuperellipseBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
+                  borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
                   valueLabel,

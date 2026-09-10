@@ -218,7 +218,7 @@ class _LoadingDialog extends StatelessWidget {
         child: Card(
           elevation: 8,
           shape:
-              RoundedSuperellipseBorder(borderRadius: BorderRadius.circular(16)),
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: Column(

@@ -13,7 +13,6 @@ import 'package:kazumi/pages/player/player_controller.dart';
 import 'package:kazumi/services/player/syncplay_endpoint.dart';
 import 'package:kazumi/services/storage/storage.dart';
 import 'package:kazumi/utils/device.dart';
-import 'package:kazumi/utils/theme.dart';
 
 // Close each step before opening the next to avoid stacked modal routes.
 enum _SyncPlayDestination { create, join, server }
@@ -70,7 +69,7 @@ InputDecoration _sheetInputDecoration({
     hintText: hintText,
     helperText: helperText,
     errorText: errorText,
-    border: SuperellipseInputBorder(borderRadius: BorderRadius.circular(20)),
+    border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
   );
 }
 

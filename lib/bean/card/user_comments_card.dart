@@ -77,14 +77,12 @@ class _UserCommentsCardState extends State<UserCommentsCard> {
                     Padding(
                       padding: EdgeInsets.only(top: index == 0 ? 0 : 3),
                       child: DecoratedBox(
-                        decoration: ShapeDecoration(
+                        decoration: BoxDecoration(
                           color: colors.surfaceContainerHighest,
-                          shape: RoundedSuperellipseBorder(
-                            borderRadius: BorderRadius.vertical(
-                              top: Radius.circular(index == 0 ? 16 : 4),
-                              bottom: Radius.circular(
-                                  index == visibleCount - 1 ? 16 : 4),
-                            ),
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(index == 0 ? 16 : 4),
+                            bottom: Radius.circular(
+                                index == visibleCount - 1 ? 16 : 4),
                           ),
                         ),
                         child: Padding(
@@ -118,7 +116,7 @@ class _UserCommentsCardState extends State<UserCommentsCard> {
                       minimumSize: const Size(48, 48),
                       backgroundColor: colors.secondaryContainer,
                       foregroundColor: colors.onSecondaryContainer,
-                      shape: RoundedSuperellipseBorder(
+                      shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),
                     ),
@@ -257,9 +255,7 @@ class _CommentSurface extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 12),
       child: Material(
         color: Theme.of(context).colorScheme.surfaceContainerLow,
-        shape: RoundedSuperellipseBorder(
-          borderRadius: BorderRadius.circular(24),
-        ),
+        borderRadius: BorderRadius.circular(24),
         clipBehavior: Clip.antiAlias,
         child: Padding(padding: const EdgeInsets.all(16), child: child),
       ),

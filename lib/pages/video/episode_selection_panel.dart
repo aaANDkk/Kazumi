@@ -364,7 +364,7 @@ class _RoadSelectorState extends State<_RoadSelector> {
                 fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
               ),
             ),
-            shape: WidgetStatePropertyAll(RoundedSuperellipseBorder(
+            shape: WidgetStatePropertyAll(RoundedRectangleBorder(
               borderRadius: selected
                   ? BorderRadius.circular(20)
                   : BorderRadius.vertical(
@@ -422,7 +422,7 @@ class _RoadSelectorState extends State<_RoadSelector> {
           surfaceTintColor: const WidgetStatePropertyAll(Colors.transparent),
           elevation: const WidgetStatePropertyAll(3),
           padding: const WidgetStatePropertyAll(EdgeInsets.all(8)),
-          shape: WidgetStatePropertyAll(RoundedSuperellipseBorder(
+          shape: WidgetStatePropertyAll(RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(28),
           )),
           minimumSize: WidgetStatePropertyAll(Size(width, 0)),
@@ -455,9 +455,7 @@ class _RoadSelectorState extends State<_RoadSelector> {
               animationDuration: duration,
               color:
                   open ? colors.secondaryContainer : colors.surfaceContainerLow,
-              shape: RoundedSuperellipseBorder(
-                borderRadius: BorderRadius.circular(open ? 16 : 20),
-              ),
+              borderRadius: BorderRadius.circular(open ? 16 : 20),
               clipBehavior: Clip.antiAlias,
               child: InkWell(
                 focusNode: _focusNode,
@@ -628,10 +626,8 @@ class _EpisodeRowState extends State<_EpisodeRow>
                 color: widget.selected
                     ? colors.primary
                     : colors.surfaceContainerLow,
-                shape: RoundedSuperellipseBorder(
-                  borderRadius: BorderRadius.lerp(
-                      restShape, BorderRadius.circular(12), press)!,
-                ),
+                borderRadius: BorderRadius.lerp(
+                    restShape, BorderRadius.circular(12), press),
                 clipBehavior: Clip.antiAlias,
                 child: child,
               ),

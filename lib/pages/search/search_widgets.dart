@@ -150,19 +150,13 @@ class _SearchResultCard extends StatelessWidget {
     return Material(
       type: MaterialType.transparency,
       clipBehavior: Clip.antiAlias,
-      shape: RoundedSuperellipseBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      borderRadius: BorderRadius.circular(16),
       child: InkWell(
           onTap: () => context.pushNamed('/info/', arguments: item),
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-            ClipPath(
-                clipper: ShapeBorderClipper(
-                  shape: RoundedSuperellipseBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                ),
+            ClipRRect(
+                borderRadius: BorderRadius.circular(16),
                 child: AspectRatio(
                   aspectRatio: coverAspectRatio,
                   child: LayoutBuilder(

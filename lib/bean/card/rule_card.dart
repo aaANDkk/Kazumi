@@ -47,23 +47,19 @@ class RuleCard extends StatelessWidget {
         child: AnimatedContainer(
           duration: duration,
           curve: Curves.easeInOutCubicEmphasized,
-          decoration: ShapeDecoration(
+          decoration: BoxDecoration(
             color: selected
                 ? colors.secondaryContainer
                 : colors.surfaceContainerLow,
-            shape: RoundedSuperellipseBorder(
-              borderRadius: BorderRadius.circular(selected ? 20 : 28),
-              side: BorderSide(
-                color: selected ? colors.secondary : Colors.transparent,
-                width: 2,
-              ),
+            borderRadius: BorderRadius.circular(selected ? 20 : 28),
+            border: Border.all(
+              color: selected ? colors.secondary : Colors.transparent,
+              width: 2,
             ),
           ),
           child: Material(
             type: MaterialType.transparency,
-            shape: RoundedSuperellipseBorder(
-              borderRadius: BorderRadius.circular(selected ? 18 : 26),
-            ),
+            borderRadius: BorderRadius.circular(selected ? 18 : 26),
             clipBehavior: Clip.antiAlias,
             child: InkWell(
               onTap: onTap,
@@ -80,14 +76,12 @@ class RuleCard extends StatelessWidget {
                         duration: duration,
                         width: 48,
                         height: 48,
-                        decoration: ShapeDecoration(
+                        decoration: BoxDecoration(
                           color: selected || installed
                               ? colors.secondaryContainer
                               : colors.primaryContainer,
-                          shape: RoundedSuperellipseBorder(
-                            borderRadius:
-                                BorderRadius.circular(installed ? 24 : 16),
-                          ),
+                          borderRadius:
+                              BorderRadius.circular(installed ? 24 : 16),
                         ),
                         child: Icon(
                           selected
@@ -177,11 +171,9 @@ class RuleTag extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-        decoration: ShapeDecoration(
+        decoration: BoxDecoration(
           color: background,
-          shape: RoundedSuperellipseBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          borderRadius: BorderRadius.circular(8),
         ),
         child: Text(label,
             style: Theme.of(context)

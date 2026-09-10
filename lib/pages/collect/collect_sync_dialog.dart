@@ -175,7 +175,7 @@ class _CollectSyncDialogState extends State<CollectSyncDialog> {
         insetPadding: const EdgeInsets.all(24),
         backgroundColor: colors.surfaceContainerHigh,
         surfaceTintColor: Colors.transparent,
-        shape: RoundedSuperellipseBorder(borderRadius: BorderRadius.circular(28)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
         clipBehavior: Clip.antiAlias,
         scrollable: true,
         iconPadding: const EdgeInsets.fromLTRB(24, 24, 24, 0),

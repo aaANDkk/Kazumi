@@ -65,7 +65,6 @@ class HistoryRecordTile extends StatelessWidget {
     final image = history.bangumiItem.images['large'] ?? '';
     final position = _position;
     final progressRatio = _progressRatio;
-    final cardShape = RoundedSuperellipseBorder(borderRadius: borderRadius);
 
     return Dismissible(
       key: ValueKey(history.key),
@@ -79,16 +78,16 @@ class HistoryRecordTile extends StatelessWidget {
       background: Container(
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: 24),
-        decoration: ShapeDecoration(
+        decoration: BoxDecoration(
           color: colors.errorContainer,
-          shape: cardShape,
+          borderRadius: borderRadius,
         ),
         child:
             Icon(Icons.delete_outline_rounded, color: colors.onErrorContainer),
       ),
       child: Material(
         color: colors.surfaceContainerLow,
-        shape: cardShape,
+        borderRadius: borderRadius,
         clipBehavior: Clip.antiAlias,
         child: Stack(
           children: [
@@ -108,7 +107,7 @@ class HistoryRecordTile extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: EdgeInsets.symmetric(
+              padding: const EdgeInsets.symmetric(
                 horizontal: 16,
                 vertical: 12,
               ),
@@ -147,20 +146,19 @@ class HistoryRecordTile extends StatelessWidget {
                     ),
                     if (progressRatio > 0.0) ...[
                       SizedBox(height: wide ? 6 : 4),
-                      ClipPath(
-                        clipper: ShapeBorderClipper(
-                          shape: RoundedSuperellipseBorder(
-                            borderRadius: BorderRadius.circular(2),
-                          ),
-                        ),
-                        child: SizedBox(
-                          width: double.infinity,
-                          child: LinearProgressIndicator(
-                            value: progressRatio,
-                            minHeight: wide ? 3.5 : 3.0,
-                            backgroundColor: colors.surfaceContainerHighest,
-                            valueColor:
-                                AlwaysStoppedAnimation<Color>(colors.primary),
+                      Padding(
+                        padding: EdgeInsets.only(right: wide ? 36.0 : 24.0),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(2),
+                          child: SizedBox(
+                            width: double.infinity,
+                            child: LinearProgressIndicator(
+                              value: progressRatio,
+                              minHeight: wide ? 3.5 : 3.0,
+                              backgroundColor: colors.surfaceContainerHighest,
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(colors.primary),
+                            ),
                           ),
                         ),
                       ),
@@ -191,12 +189,8 @@ class HistoryRecordTile extends StatelessWidget {
                       children: [
                         ExcludeSemantics(
                           child: IgnorePointer(
-                            child: ClipPath(
-                              clipper: ShapeBorderClipper(
-                                shape: RoundedSuperellipseBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
                               child: image.isEmpty
                                   ? Container(
                                       width: coverWidth,
@@ -245,32 +239,40 @@ class HistoryRecordTile extends StatelessWidget {
     final iconSize = wide ? 20.0 : 18.0;
     final buttonRadius = wide ? 10.0 : 8.0;
     final buttonSpacing = wide ? 8.0 : 6.0;
-    final buttonShape = RoundedSuperellipseBorder(
+    final buttonShape = RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(buttonRadius),
     );
+    final normalActionsWidth = buttonSize.width * 3 + buttonSpacing * 2;
 
     if (busy) {
       return SizedBox(
-        width: buttonSize.width,
+        width: normalActionsWidth,
         height: buttonSize.height,
         child: Center(child: LoadingIndicator(size: wide ? 20 : 16)),
       );
     }
     if (editing) {
-      return IconButton.filledTonal(
-        tooltip: '删除记录',
-        style: IconButton.styleFrom(
-          minimumSize: buttonSize,
-          fixedSize: buttonSize,
-          backgroundColor: colors.errorContainer,
-          foregroundColor: colors.onErrorContainer,
-          padding: EdgeInsets.zero,
-          shape: buttonShape,
-          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          visualDensity: VisualDensity.compact,
+      return SizedBox(
+        width: normalActionsWidth,
+        height: buttonSize.height,
+        child: Align(
+          alignment: Alignment.centerRight,
+          child: IconButton.filledTonal(
+            tooltip: '删除记录',
+            style: IconButton.styleFrom(
+              minimumSize: buttonSize,
+              fixedSize: buttonSize,
+              backgroundColor: colors.errorContainer,
+              foregroundColor: colors.onErrorContainer,
+              padding: EdgeInsets.zero,
+              shape: buttonShape,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              visualDensity: VisualDensity.compact,
+            ),
+            onPressed: onDelete,
+            icon: Icon(Icons.delete_outline_rounded, size: iconSize),
+          ),
         ),
-        onPressed: onDelete,
-        icon: Icon(Icons.delete_outline_rounded, size: iconSize),
       );
     }
 
@@ -308,13 +310,6 @@ class HistoryRecordTile extends StatelessWidget {
         ),
       MenuAnchor(
         consumeOutsideTap: true,
-        style: MenuStyle(
-          shape: WidgetStatePropertyAll<OutlinedBorder>(
-            RoundedSuperellipseBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-          ),
-        ),
         menuChildren: [
           MenuItemButton(
             leadingIcon: const Icon(Icons.info_outline_rounded),

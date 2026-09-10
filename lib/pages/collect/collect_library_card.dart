@@ -30,9 +30,7 @@ class _CollectLibraryCard extends StatelessWidget {
 
     return Material(
       color: colors.surfaceContainerLow,
-      shape: RoundedSuperellipseBorder(
-        borderRadius: BorderRadius.circular(24),
-      ),
+      borderRadius: BorderRadius.circular(24),
       clipBehavior: Clip.antiAlias,
       child: Stack(
         children: [
@@ -54,12 +52,8 @@ class _CollectLibraryCard extends StatelessWidget {
                     child: Hero(
                       tag: item.id,
                       transitionOnUserGestures: true,
-                      child: ClipPath(
-                        clipper: ShapeBorderClipper(
-                          shape: RoundedSuperellipseBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                        ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
                         child: NetworkImgLayer(
                           src: item.images['large'] ??
                               item.images['common'] ??
@@ -137,7 +131,7 @@ class _CollectLibraryCard extends StatelessWidget {
       consumeOutsideTap: true,
       style: MenuStyle(
         shape: WidgetStatePropertyAll(
-          RoundedSuperellipseBorder(borderRadius: BorderRadius.circular(16)),
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         ),
       ),
       menuChildren: [

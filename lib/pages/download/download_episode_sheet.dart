@@ -265,19 +265,15 @@ class _EpisodeTile extends StatelessWidget {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 250),
       curve: Curves.easeInOutCubic,
-      decoration: ShapeDecoration(
+      decoration: BoxDecoration(
         color: backgroundColor,
-        shape: RoundedSuperellipseBorder(
-          borderRadius: BorderRadius.circular(isSelected ? 28 : 16),
-        ),
+        borderRadius: BorderRadius.circular(isSelected ? 28 : 16),
       ),
       clipBehavior: Clip.antiAlias,
       child: Material(
         type: MaterialType.transparency,
-        shape: RoundedSuperellipseBorder(
-          borderRadius: BorderRadius.circular(isSelected ? 28 : 16),
-        ),
         child: InkWell(
+          borderRadius: BorderRadius.circular(isSelected ? 28 : 16),
           onTap: onTap,
           child: Stack(
             children: [

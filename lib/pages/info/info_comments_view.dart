@@ -166,7 +166,7 @@ class InfoCommentsView extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         backgroundColor: colors.surfaceContainerLow,
         foregroundColor: colors.onSurfaceVariant,
-        shape: RoundedSuperellipseBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
       child: Row(children: [
         Expanded(child: Text(editing ? '编辑' : _writeReviewLabel)),

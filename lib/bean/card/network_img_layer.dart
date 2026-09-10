@@ -64,11 +64,9 @@ class NetworkImgLayer extends StatelessWidget {
     }
 
     final (memCacheWidth, memCacheHeight) = _cacheSize(context);
-    return ClipPath(
+    return ClipRRect(
       clipBehavior: Clip.antiAlias,
-      clipper: ShapeBorderClipper(
-        shape: RoundedSuperellipseBorder(borderRadius: _borderRadius),
-      ),
+      borderRadius: _borderRadius,
       child: CachedNetworkImage(
         imageUrl: imageUrl,
         width: width,
@@ -136,12 +134,12 @@ class NetworkImgLayer extends StatelessWidget {
       width: width,
       height: height,
       clipBehavior: Clip.antiAlias,
-      decoration: ShapeDecoration(
+      decoration: BoxDecoration(
         color: Theme.of(context)
             .colorScheme
             .onInverseSurface
             .withValues(alpha: 0.4),
-        shape: RoundedSuperellipseBorder(borderRadius: _borderRadius),
+        borderRadius: _borderRadius,
       ),
       child: type == 'bg'
           ? const SizedBox()

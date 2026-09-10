@@ -450,7 +450,7 @@ class _PluginViewPageState extends State<PluginViewPage> {
         consumeOutsideTap: true,
         style: MenuStyle(
           shape: WidgetStatePropertyAll(
-              RoundedSuperellipseBorder(borderRadius: BorderRadius.circular(20))),
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))),
           padding: const WidgetStatePropertyAll(EdgeInsets.all(8)),
         ),
         builder: (context, controller, child) => IconButton(
