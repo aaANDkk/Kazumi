@@ -107,6 +107,7 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
       _applyThemeFont();
       setState(() {});
       KazumiDialog.showToast(message: '已应用自定义字体: $customFontName');
+    }
   }
 
   void setTheme(Color? color) {
@@ -313,8 +314,8 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
                     ),
                   ],
                 ),
-<<<<<<< HEAD
-                SettingsTile(
+              ),
+              SettingsTile(
                   leading: Icons.palette_rounded,
                   enabled: !useDynamicColor,
                   onPressed: (_) async {
