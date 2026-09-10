@@ -111,24 +111,24 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
   }
 
   void setTheme(Color? color) {
-    var defaultDarkTheme = ThemeData(
+    var defaultDarkTheme = applyAppTheme(ThemeData(
         useMaterial3: true,
         fontFamily: themeProvider.currentFontFamily,
         brightness: Brightness.dark,
         colorSchemeSeed: color,
         progressIndicatorTheme: progressIndicatorTheme2024,
         sliderTheme: sliderTheme2024,
-        pageTransitionsTheme: pageTransitionsTheme2024);
+        pageTransitionsTheme: pageTransitionsTheme2024));
     var oledTheme = oledDarkTheme(defaultDarkTheme);
     themeProvider.setTheme(
-      ThemeData(
+      applyAppTheme(ThemeData(
           useMaterial3: true,
           fontFamily: themeProvider.currentFontFamily,
           brightness: Brightness.light,
           colorSchemeSeed: color,
           progressIndicatorTheme: progressIndicatorTheme2024,
           sliderTheme: sliderTheme2024,
-          pageTransitionsTheme: pageTransitionsTheme2024),
+          pageTransitionsTheme: pageTransitionsTheme2024)),
       oledEnhance ? oledTheme : defaultDarkTheme,
     );
     defaultThemeColor = color?.toARGB32().toRadixString(16) ?? 'default';
@@ -136,24 +136,24 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
   }
 
   void resetTheme() {
-    var defaultDarkTheme = ThemeData(
+    var defaultDarkTheme = applyAppTheme(ThemeData(
         useMaterial3: true,
         fontFamily: themeProvider.currentFontFamily,
         brightness: Brightness.dark,
         colorSchemeSeed: Colors.green,
         progressIndicatorTheme: progressIndicatorTheme2024,
         sliderTheme: sliderTheme2024,
-        pageTransitionsTheme: pageTransitionsTheme2024);
+        pageTransitionsTheme: pageTransitionsTheme2024));
     var oledTheme = oledDarkTheme(defaultDarkTheme);
     themeProvider.setTheme(
-      ThemeData(
+      applyAppTheme(ThemeData(
           useMaterial3: true,
           fontFamily: themeProvider.currentFontFamily,
           brightness: Brightness.light,
           colorSchemeSeed: Colors.green,
           progressIndicatorTheme: progressIndicatorTheme2024,
           sliderTheme: sliderTheme2024,
-          pageTransitionsTheme: pageTransitionsTheme2024),
+          pageTransitionsTheme: pageTransitionsTheme2024)),
       oledEnhance ? oledTheme : defaultDarkTheme,
     );
     defaultThemeColor = 'default';

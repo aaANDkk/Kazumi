@@ -507,7 +507,7 @@ class _PluginTestPageState extends State<PluginTestPage> {
         margin: const EdgeInsets.only(bottom: 8.0),
         elevation: 0,
         color: theme.colorScheme.surfaceContainerHighest,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedSuperellipseBorder(borderRadius: BorderRadius.circular(20)),
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child:
@@ -603,7 +603,7 @@ class _PluginTestPageState extends State<PluginTestPage> {
         margin: const EdgeInsets.only(bottom: 8.0),
         elevation: 0,
         color: theme.colorScheme.surfaceContainerHighest,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedSuperellipseBorder(borderRadius: BorderRadius.circular(20)),
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: Column(

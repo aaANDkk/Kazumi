@@ -60,13 +60,15 @@ class _SplitListRowState extends State<SplitListRow> {
           : splitListMotionDuration,
       curve: splitListMotionCurve,
       clipBehavior: Clip.antiAlias,
-      decoration: BoxDecoration(
+      decoration: ShapeDecoration(
         color: colors.surfaceContainerLow,
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(
-              _pressed ? widget.pressedRadius : widget.topRadius),
-          bottom: Radius.circular(
-              _pressed ? widget.pressedRadius : widget.bottomRadius),
+        shape: RoundedSuperellipseBorder(
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(
+                _pressed ? widget.pressedRadius : widget.topRadius),
+            bottom: Radius.circular(
+                _pressed ? widget.pressedRadius : widget.bottomRadius),
+          ),
         ),
       ),
       child: Material(

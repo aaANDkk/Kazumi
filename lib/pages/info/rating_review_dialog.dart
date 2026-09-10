@@ -308,7 +308,7 @@ class _RatingReviewDialogState extends State<RatingReviewDialog> {
                   insetPadding: const EdgeInsets.all(24),
                   backgroundColor: colors.surfaceContainerHigh,
                   surfaceTintColor: Colors.transparent,
-                  shape: RoundedRectangleBorder(
+                  shape: RoundedSuperellipseBorder(
                       borderRadius: BorderRadius.circular(28)),
                   clipBehavior: Clip.antiAlias,
                   child: content,
@@ -473,7 +473,7 @@ class _RatingReviewDialogState extends State<RatingReviewDialog> {
                   : states.contains(WidgetState.pressed)
                       ? 12.0
                       : 4.0;
-              return RoundedRectangleBorder(
+              return RoundedSuperellipseBorder(
                   borderRadius: BorderRadius.horizontal(
                 left: Radius.circular(index == 0 ? 24 : radius),
                 right: Radius.circular(index == columns - 1 ? 24 : radius),

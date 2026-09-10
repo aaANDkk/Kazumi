@@ -83,7 +83,7 @@ class EditorChoiceGroup<T> extends StatelessWidget {
                 foregroundColor: selected
                     ? colors.onSecondaryContainer
                     : colors.onSurfaceVariant,
-                shape: RoundedRectangleBorder(
+                shape: RoundedSuperellipseBorder(
                     borderRadius: BorderRadiusDirectional.only(
                   topStart: index == 0 || wrap ? outer : inner,
                   bottomStart: index == 0 || wrap ? outer : inner,

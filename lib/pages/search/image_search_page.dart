@@ -540,7 +540,7 @@ class _ImageSearchPageState extends State<ImageSearchPage> {
         textStyle: WidgetStatePropertyAll(
             type.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
         shape: WidgetStateProperty.resolveWith((states) =>
-            RoundedRectangleBorder(
+            RoundedSuperellipseBorder(
                 borderRadius: BorderRadius.circular(
                     states.contains(WidgetState.pressed) ? 16 : 28))),
         animationDuration: _transition,

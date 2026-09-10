@@ -170,7 +170,10 @@ class _CollectLibraryViewState extends State<CollectLibraryView> {
         padding: const EdgeInsets.only(bottom: 24),
         child: Material(
           color: theme.colorScheme.surfaceContainerLow,
-          borderRadius: BorderRadius.circular(28),
+          shape: RoundedSuperellipseBorder(
+            borderRadius: BorderRadius.circular(28),
+          ),
+          clipBehavior: Clip.antiAlias,
           child: Padding(
             padding: const EdgeInsets.all(12),
             child: Column(
@@ -393,17 +396,21 @@ class _CollectLibraryViewState extends State<CollectLibraryView> {
             ? Duration.zero
             : const Duration(milliseconds: 250),
         curve: Curves.easeInOutCubicEmphasized,
-        decoration: BoxDecoration(
+        decoration: ShapeDecoration(
           color: selected
               ? colors.primaryContainer
               : wide
                   ? colors.surfaceContainerLow
                   : colors.surfaceContainer,
-          borderRadius: BorderRadius.circular(selected ? 20 : 12),
+          shape: RoundedSuperellipseBorder(
+            borderRadius: BorderRadius.circular(selected ? 20 : 12),
+          ),
         ),
         child: Material(
           color: Colors.transparent,
-          borderRadius: BorderRadius.circular(selected ? 20 : 12),
+          shape: RoundedSuperellipseBorder(
+            borderRadius: BorderRadius.circular(selected ? 20 : 12),
+          ),
           clipBehavior: Clip.antiAlias,
           child: InkWell(
             key: ValueKey('collect-filter-${type?.value ?? 'all'}'),

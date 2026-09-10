@@ -74,7 +74,7 @@ class BangumiTimelineCard extends StatelessWidget {
         elevation: 0,
         margin: EdgeInsets.zero,
         color: Theme.of(context).colorScheme.surfaceContainerLow,
-        shape: const RoundedRectangleBorder(
+        shape: const RoundedSuperellipseBorder(
           borderRadius: BorderRadius.all(Radius.circular(_cornerRadius)),
         ),
         clipBehavior: Clip.antiAlias,
@@ -174,9 +174,14 @@ class BangumiTimelineCard extends StatelessWidget {
           builder: (context, constraints) => Hero(
             tag: bangumiItem.id,
             transitionOnUserGestures: true,
-            child: ClipRRect(
-              borderRadius: const BorderRadius.all(
-                  Radius.circular(_cornerRadius - _contentPadding)),
+            child: ClipPath(
+              clipper: const ShapeBorderClipper(
+                shape: RoundedSuperellipseBorder(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(_cornerRadius - _contentPadding),
+                  ),
+                ),
+              ),
               child: imageUrl.isEmpty
                   ? ColoredBox(
                       color: colors.surfaceContainerHighest,

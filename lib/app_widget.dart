@@ -163,7 +163,7 @@ class _AppWidgetState extends State<AppWidget>
     Color? color,
     ColorScheme? colorScheme,
   }) {
-    return ThemeData(
+    return applyAppTheme(ThemeData(
       useMaterial3: true,
       fontFamily: fontFamily,
       brightness: brightness,
@@ -172,7 +172,7 @@ class _AppWidgetState extends State<AppWidget>
       progressIndicatorTheme: progressIndicatorTheme2024,
       sliderTheme: sliderTheme2024,
       pageTransitionsTheme: pageTransitionsTheme2024,
-    );
+    ));
   }
 
   void _syncWindowsTitleBarBrightness(ThemeProvider themeProvider) {

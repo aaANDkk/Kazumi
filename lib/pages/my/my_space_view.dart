@@ -156,7 +156,10 @@ class _WatchStatsPanel extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
     return Material(
       color: colors.surfaceContainerHigh,
-      borderRadius: BorderRadius.circular(48),
+      shape: RoundedSuperellipseBorder(
+        borderRadius: BorderRadius.circular(48),
+      ),
+      clipBehavior: Clip.antiAlias,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         child: Column(
@@ -509,8 +512,12 @@ class _ArrowCue extends StatelessWidget {
         child: Container(
           width: 52,
           height: 32,
-          decoration: BoxDecoration(
-              color: color, borderRadius: BorderRadius.circular(20)),
+          decoration: ShapeDecoration(
+            color: color,
+            shape: RoundedSuperellipseBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+          ),
           child: Icon(Icons.arrow_forward_rounded, color: foreground, size: 20),
         ),
       );
@@ -603,9 +610,12 @@ class _ExpressiveActionState extends State<_ExpressiveAction> {
           duration: duration,
           curve: Curves.easeOutCubic,
           clipBehavior: Clip.antiAlias,
-          decoration: BoxDecoration(
+          decoration: ShapeDecoration(
             color: widget.color,
-            borderRadius: _pressed ? BorderRadius.circular(16) : widget.radius,
+            shape: RoundedSuperellipseBorder(
+              borderRadius:
+                  _pressed ? BorderRadius.circular(16) : widget.radius,
+            ),
           ),
           child: Material(
             type: MaterialType.transparency,

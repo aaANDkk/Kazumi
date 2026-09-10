@@ -180,7 +180,7 @@ class _SearchPageState extends State<SearchPage> {
           type: MaterialType.transparency,
           child: ListTile(
             shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                RoundedSuperellipseBorder(borderRadius: BorderRadius.circular(20)),
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             leading: const Icon(Icons.tune_rounded),
@@ -223,7 +223,7 @@ class _SearchPageState extends State<SearchPage> {
                     child: ListTile(
                       contentPadding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 4),
-                      shape: RoundedRectangleBorder(
+                      shape: RoundedSuperellipseBorder(
                           borderRadius: BorderRadius.circular(16)),
                       leading: Icon(Icons.history_rounded,
                           color: theme.colorScheme.onSurfaceVariant, size: 22),

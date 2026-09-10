@@ -116,12 +116,19 @@ class _ScaffoldMenu extends State<ScaffoldMenu> with RouteAware {
       child: RouterOutlet(key: _outletKey),
     );
     if (borderRadius != null) {
-      child = ClipRRect(borderRadius: borderRadius, child: child);
+      child = ClipPath(
+        clipper: ShapeBorderClipper(
+          shape: RoundedSuperellipseBorder(borderRadius: borderRadius),
+        ),
+        child: child,
+      );
     }
     return Container(
-      decoration: BoxDecoration(
+      decoration: ShapeDecoration(
         color: Theme.of(context).colorScheme.primaryContainer,
-        borderRadius: borderRadius,
+        shape: RoundedSuperellipseBorder(
+          borderRadius: borderRadius ?? BorderRadius.zero,
+        ),
       ),
       child: child,
     );

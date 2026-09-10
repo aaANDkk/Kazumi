@@ -38,10 +38,10 @@ class _ImageSourceSelector extends StatelessWidget {
                             : colors.onSurfaceVariant),
                 shape: WidgetStateProperty.resolveWith((states) {
                   if (states.contains(WidgetState.pressed)) {
-                    return RoundedRectangleBorder(
+                    return RoundedSuperellipseBorder(
                         borderRadius: BorderRadius.circular(12));
                   }
-                  return RoundedRectangleBorder(
+                  return RoundedSuperellipseBorder(
                       borderRadius: selected
                           ? BorderRadius.circular(24)
                           : BorderRadius.horizontal(
@@ -267,8 +267,12 @@ class _BestMatch extends StatelessWidget {
         ]),
       ]),
     );
-    final frame = ClipRRect(
-      borderRadius: BorderRadius.circular(16),
+    final frame = ClipPath(
+      clipper: ShapeBorderClipper(
+        shape: RoundedSuperellipseBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+      ),
       child: SizedBox(
         height: MediaQuery.sizeOf(context).height < 500 ? 112 : 200,
         child: _TraceFrame(result: result),
@@ -276,7 +280,7 @@ class _BestMatch extends StatelessWidget {
     );
     return Material(
       color: colors.surface,
-      shape: RoundedRectangleBorder(
+      shape: RoundedSuperellipseBorder(
         borderRadius: BorderRadius.circular(24),
         side: BorderSide(color: colors.outlineVariant),
       ),
@@ -362,8 +366,12 @@ class _OtherMatch extends StatelessWidget {
                           MediaQuery.textScalerOf(context).scale(16) < 24) ...[
                         SizedBox(
                             width: constraints.maxWidth >= 400 ? 112 : 80,
-                            child: ClipRRect(
-                                borderRadius: BorderRadius.circular(12),
+                            child: ClipPath(
+                                clipper: ShapeBorderClipper(
+                                  shape: RoundedSuperellipseBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
                                 child: _TraceFrame(result: result))),
                         const SizedBox(width: 16),
                       ],

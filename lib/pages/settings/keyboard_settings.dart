@@ -389,7 +389,7 @@ class _AddKeyButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final shape = RoundedRectangleBorder(
+    final shape = RoundedSuperellipseBorder(
       borderRadius: BorderRadius.circular(8),
       side: BorderSide(color: colorScheme.outlineVariant),
     );

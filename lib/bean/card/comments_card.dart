@@ -81,9 +81,11 @@ class CommentsCard extends StatelessWidget {
                             Container(
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 2),
-                                decoration: BoxDecoration(
+                                decoration: ShapeDecoration(
                                   color: Theme.of(context).colorScheme.primary,
-                                  borderRadius: BorderRadius.circular(4),
+                                  shape: RoundedSuperellipseBorder(
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
                                 ),
                                 child: Text(
                                   '我的吐槽',

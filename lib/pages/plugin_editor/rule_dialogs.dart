@@ -298,7 +298,7 @@ class _RuleDialog extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
     return AlertDialog(
       backgroundColor: colors.surfaceContainerHigh,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+      shape: RoundedSuperellipseBorder(borderRadius: BorderRadius.circular(28)),
       constraints: const BoxConstraints(maxWidth: 560),
       insetPadding: const EdgeInsets.all(24),
       scrollable: true,

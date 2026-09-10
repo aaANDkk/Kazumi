@@ -76,7 +76,7 @@ class StateActionButton extends StatelessWidget {
       minimumSize: const WidgetStatePropertyAll(Size(64, 48)),
       padding: const WidgetStatePropertyAll(
           EdgeInsets.symmetric(horizontal: 24, vertical: 12)),
-      shape: WidgetStateProperty.resolveWith((states) => RoundedRectangleBorder(
+      shape: WidgetStateProperty.resolveWith((states) => RoundedSuperellipseBorder(
             borderRadius: BorderRadius.circular(
                 states.contains(WidgetState.pressed) ? 16 : 28),
           )),

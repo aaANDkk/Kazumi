@@ -219,7 +219,7 @@ class _PlayerItemPanelState extends State<PlayerItemPanel> {
                     backgroundColor: playerController.danmaku.danmakuOn
                         ? Theme.of(context).colorScheme.primaryContainer
                         : Theme.of(context).disabledColor,
-                    shape: RoundedRectangleBorder(
+                    shape: RoundedSuperellipseBorder(
                       borderRadius: BorderRadius.circular(isDesktop() ? 8 : 20),
                     ),
                   ),

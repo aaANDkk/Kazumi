@@ -540,7 +540,7 @@ class _RelatedBangumiCardH extends StatelessWidget {
       margin: EdgeInsets.zero,
       color: colorScheme.surfaceContainerLow,
       clipBehavior: Clip.antiAlias,
-      shape: RoundedRectangleBorder(
+      shape: RoundedSuperellipseBorder(
         borderRadius: BorderRadius.circular(14),
       ),
       child: InkWell(

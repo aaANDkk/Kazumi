@@ -38,7 +38,7 @@ class _ExitConfirmationDialogState extends State<ExitConfirmationDialog> {
       ),
       animationDuration: _animationDuration,
       shape: WidgetStateProperty.resolveWith((states) {
-        return RoundedRectangleBorder(
+        return RoundedSuperellipseBorder(
           borderRadius: BorderRadius.circular(
             states.contains(WidgetState.pressed) ? 12 : 24,
           ),
@@ -51,7 +51,7 @@ class _ExitConfirmationDialogState extends State<ExitConfirmationDialog> {
       insetPadding: const EdgeInsets.all(24),
       backgroundColor: colors.surfaceContainerHigh,
       surfaceTintColor: Colors.transparent,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+      shape: RoundedSuperellipseBorder(borderRadius: BorderRadius.circular(28)),
       clipBehavior: Clip.antiAlias,
       scrollable: true,
       iconPadding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
@@ -59,9 +59,11 @@ class _ExitConfirmationDialogState extends State<ExitConfirmationDialog> {
         child: Container(
           width: 56,
           height: 56,
-          decoration: BoxDecoration(
+          decoration: ShapeDecoration(
             color: colors.primaryContainer,
-            borderRadius: BorderRadius.circular(20),
+            shape: RoundedSuperellipseBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
           ),
           child: Icon(
             Icons.exit_to_app_rounded,
@@ -125,7 +127,7 @@ class _ExitConfirmationDialogState extends State<ExitConfirmationDialog> {
               },
               controlAffinity: ListTileControlAffinity.leading,
               contentPadding: const EdgeInsets.symmetric(horizontal: 4),
-              shape: RoundedRectangleBorder(
+              shape: RoundedSuperellipseBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
               title: Text('记住我的选择', style: theme.textTheme.bodyMedium),
@@ -187,7 +189,7 @@ class _ExitConfirmationDialogState extends State<ExitConfirmationDialog> {
 
     return Material(
       color: selected ? colors.secondaryContainer : colors.surfaceContainerLow,
-      borderRadius: borderRadius,
+      shape: RoundedSuperellipseBorder(borderRadius: borderRadius),
       clipBehavior: Clip.antiAlias,
       animationDuration: _animationDuration,
       child: RadioListTile<ExitDialogAction>(
@@ -196,7 +198,7 @@ class _ExitConfirmationDialogState extends State<ExitConfirmationDialog> {
         activeColor: colors.onSecondaryContainer,
         controlAffinity: ListTileControlAffinity.trailing,
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        shape: RoundedRectangleBorder(borderRadius: borderRadius),
+        shape: RoundedSuperellipseBorder(borderRadius: borderRadius),
         secondary: Icon(icon, color: foreground),
         title: Text(
           title,

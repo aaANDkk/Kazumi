@@ -108,24 +108,30 @@ class HistoryRecordTile extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              padding: EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 12,
+              ),
               child: LayoutBuilder(builder: (context, constraints) {
                 final wide = constraints.maxWidth >= 600;
                 final largeText =
                     MediaQuery.textScalerOf(context).scale(14) > 21;
-                final coverWidth = wide ? 68.0 : 58.0;
-                final coverHeight = coverWidth * 1.38;
+                final coverWidth = wide ? 72.0 : 60.0;
+                final coverHeight = wide ? 100.0 : 84.0;
+                final coverGap = wide ? 16.0 : 12.0;
+                final actionsGap = wide ? 16.0 : 8.0;
+
                 final content = Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
                       title,
-                      maxLines: 2,
+                      maxLines: wide ? 2 : 1,
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w700,
-                        fontSize: 15,
+                        fontSize: wide ? 15.5 : 14.5,
                         height: 1.25,
                       ),
                     ),
@@ -136,11 +142,11 @@ class HistoryRecordTile extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: colors.onSurfaceVariant,
-                        fontSize: 13,
+                        fontSize: wide ? 13 : 12.5,
                       ),
                     ),
                     if (progressRatio > 0.0) ...[
-                      const SizedBox(height: 5),
+                      SizedBox(height: wide ? 6 : 4),
                       ClipPath(
                         clipper: ShapeBorderClipper(
                           shape: RoundedSuperellipseBorder(
@@ -151,7 +157,7 @@ class HistoryRecordTile extends StatelessWidget {
                           width: double.infinity,
                           child: LinearProgressIndicator(
                             value: progressRatio,
-                            minHeight: 3,
+                            minHeight: wide ? 3.5 : 3.0,
                             backgroundColor: colors.surfaceContainerHighest,
                             valueColor:
                                 AlwaysStoppedAnimation<Color>(colors.primary),
@@ -159,7 +165,7 @@ class HistoryRecordTile extends StatelessWidget {
                         ),
                       ),
                     ],
-                    const SizedBox(height: 5),
+                    SizedBox(height: wide ? 6 : 4),
                     Text(
                       [
                         source,
@@ -170,12 +176,12 @@ class HistoryRecordTile extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: colors.onSurfaceVariant,
-                        fontSize: 11.5,
+                        fontSize: wide ? 12 : 11.5,
                       ),
                     ),
                   ],
                 );
-                final actions = _actions(context, wide: wide || largeText);
+                final actions = _actions(context, wide: wide);
                 return Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -207,14 +213,14 @@ class HistoryRecordTile extends StatelessWidget {
                             ),
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        SizedBox(width: coverGap),
                         Expanded(
                           child: ExcludeSemantics(
                             child: IgnorePointer(child: content),
                           ),
                         ),
                         if (!largeText) ...[
-                          const SizedBox(width: 8),
+                          SizedBox(width: actionsGap),
                           actions,
                         ],
                       ],
@@ -235,9 +241,10 @@ class HistoryRecordTile extends StatelessWidget {
 
   Widget _actions(BuildContext context, {required bool wide}) {
     final colors = Theme.of(context).colorScheme;
-    final buttonSize = wide ? const Size(36, 36) : const Size(30, 30);
-    final iconSize = wide ? 20.0 : 16.0;
+    final buttonSize = wide ? const Size(38, 38) : const Size(32, 32);
+    final iconSize = wide ? 20.0 : 18.0;
     final buttonRadius = wide ? 10.0 : 8.0;
+    final buttonSpacing = wide ? 8.0 : 6.0;
     final buttonShape = RoundedSuperellipseBorder(
       borderRadius: BorderRadius.circular(buttonRadius),
     );
@@ -246,7 +253,7 @@ class HistoryRecordTile extends StatelessWidget {
       return SizedBox(
         width: buttonSize.width,
         height: buttonSize.height,
-        child: const Center(child: LoadingIndicator(size: 18)),
+        child: Center(child: LoadingIndicator(size: wide ? 20 : 16)),
       );
     }
     if (editing) {
@@ -259,6 +266,8 @@ class HistoryRecordTile extends StatelessWidget {
           foregroundColor: colors.onErrorContainer,
           padding: EdgeInsets.zero,
           shape: buttonShape,
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          visualDensity: VisualDensity.compact,
         ),
         onPressed: onDelete,
         icon: Icon(Icons.delete_outline_rounded, size: iconSize),
@@ -275,6 +284,8 @@ class HistoryRecordTile extends StatelessWidget {
           foregroundColor: colors.onPrimaryContainer,
           padding: EdgeInsets.zero,
           shape: buttonShape,
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          visualDensity: VisualDensity.compact,
         ),
         onPressed: onPlay,
         icon: Icon(Icons.play_arrow_rounded, size: iconSize),
@@ -289,6 +300,8 @@ class HistoryRecordTile extends StatelessWidget {
             foregroundColor: colors.onSurfaceVariant,
             padding: EdgeInsets.zero,
             shape: buttonShape,
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            visualDensity: VisualDensity.compact,
           ),
           onPressed: onPlayNext,
           icon: Icon(Icons.skip_next_rounded, size: iconSize),
@@ -332,13 +345,17 @@ class HistoryRecordTile extends StatelessWidget {
             child: Text('删除记录', style: TextStyle(color: colors.error)),
           ),
         ],
-        builder: (context, controller, child) => IconButton(
+        builder: (context, controller, child) => IconButton.filledTonal(
           tooltip: '更多操作',
           style: IconButton.styleFrom(
             minimumSize: buttonSize,
             fixedSize: buttonSize,
+            backgroundColor: colors.surfaceContainerHighest,
+            foregroundColor: colors.onSurfaceVariant,
             padding: EdgeInsets.zero,
             shape: buttonShape,
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            visualDensity: VisualDensity.compact,
           ),
           onPressed: () =>
               controller.isOpen ? controller.close() : controller.open(),
@@ -346,24 +363,14 @@ class HistoryRecordTile extends StatelessWidget {
         ),
       ),
     ];
-    return wide
-        ? Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              for (int i = 0; i < buttons.length; i++) ...[
-                if (i > 0) const SizedBox(width: 4),
-                buttons[i],
-              ],
-            ],
-          )
-        : Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              for (int i = 0; i < buttons.length; i++) ...[
-                if (i > 0) const SizedBox(height: 2),
-                buttons[i],
-              ],
-            ],
-          );
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (int i = 0; i < buttons.length; i++) ...[
+          if (i > 0) SizedBox(width: buttonSpacing),
+          buttons[i],
+        ],
+      ],
+    );
   }
 }

@@ -369,7 +369,9 @@ class _RailDestination extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
       child: Material(
         color: selected ? colorScheme.secondaryContainer : Colors.transparent,
-        borderRadius: BorderRadius.circular(28),
+        shape: RoundedSuperellipseBorder(
+          borderRadius: BorderRadius.circular(28),
+        ),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           onTap: onTap,

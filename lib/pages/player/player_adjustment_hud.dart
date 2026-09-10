@@ -149,8 +149,12 @@ class _PlayerAdjustmentHudState extends State<PlayerAdjustmentHud> {
             scale: widget.visible ? 1 : 0.92,
             duration: duration,
             curve: Curves.easeOutBack,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(30),
+            child: ClipPath(
+              clipper: ShapeBorderClipper(
+                shape: RoundedSuperellipseBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+              ),
               // Avoid BackdropFilter/ImageFilter.blur: it can trigger Impeller
               // native aborts when HUD saveLayers are drawn over video output.
               // See flutter/flutter#185506.
@@ -159,11 +163,13 @@ class _PlayerAdjustmentHudState extends State<PlayerAdjustmentHud> {
                 curve: Curves.easeOutCubic,
                 width: 200,
                 padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-                decoration: BoxDecoration(
+                decoration: ShapeDecoration(
                   color: surface,
-                  borderRadius: BorderRadius.circular(30),
-                  border: Border.all(color: border),
-                  boxShadow: [
+                  shape: RoundedSuperellipseBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    side: BorderSide(color: border),
+                  ),
+                  shadows: [
                     BoxShadow(
                       color: accent.withValues(
                         alpha: widget.visible ? 0.24 : 0,
@@ -186,9 +192,11 @@ class _PlayerAdjustmentHudState extends State<PlayerAdjustmentHud> {
                       curve: Curves.easeOutCubic,
                       width: 32,
                       height: 32,
-                      decoration: BoxDecoration(
+                      decoration: ShapeDecoration(
                         color: container,
-                        borderRadius: BorderRadius.circular(20),
+                        shape: RoundedSuperellipseBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
                       ),
                       child: AnimatedSwitcher(
                         duration: duration,
@@ -642,8 +650,12 @@ class _PlayerSeekHudState extends State<PlayerSeekHud> {
             scale: widget.visible ? 1 : 0.92,
             duration: duration,
             curve: Curves.easeOutBack,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(30),
+            child: ClipPath(
+              clipper: ShapeBorderClipper(
+                shape: RoundedSuperellipseBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+              ),
               // Avoid BackdropFilter/ImageFilter.blur: it can trigger Impeller
               // native aborts when HUD saveLayers are drawn over video output.
               // See flutter/flutter#185506.
@@ -651,11 +663,13 @@ class _PlayerSeekHudState extends State<PlayerSeekHud> {
                 duration: duration,
                 curve: Curves.easeOutCubic,
                 width: 248,
-                decoration: BoxDecoration(
+                decoration: ShapeDecoration(
                   color: surface,
-                  borderRadius: BorderRadius.circular(30),
-                  border: Border.all(color: border),
-                  boxShadow: [
+                  shape: RoundedSuperellipseBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    side: BorderSide(color: border),
+                  ),
+                  shadows: [
                     BoxShadow(
                       color: accent.withValues(
                         alpha: widget.visible ? 0.24 : 0,
@@ -699,9 +713,11 @@ class _PlayerSeekHudState extends State<PlayerSeekHud> {
                             curve: Curves.easeOutCubic,
                             width: 36,
                             height: 36,
-                            decoration: BoxDecoration(
+                            decoration: ShapeDecoration(
                               color: container,
-                              borderRadius: BorderRadius.circular(20),
+                              shape: RoundedSuperellipseBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
                             ),
                             child: AnimatedSwitcher(
                               duration: duration,
@@ -856,8 +872,12 @@ class _PlayerSpeedHudState extends State<PlayerSpeedHud> {
             scale: widget.visible ? 1 : 0.96,
             duration: duration,
             curve: Curves.easeOutCubic,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(18),
+            child: ClipPath(
+              clipper: ShapeBorderClipper(
+                shape: RoundedSuperellipseBorder(
+                  borderRadius: BorderRadius.circular(18),
+                ),
+              ),
               // Avoid BackdropFilter/ImageFilter.blur: it can trigger Impeller
               // native aborts when HUD saveLayers are drawn over video output.
               // See flutter/flutter#185506.
@@ -866,11 +886,13 @@ class _PlayerSpeedHudState extends State<PlayerSpeedHud> {
                 curve: Curves.easeOutCubic,
                 width: 94,
                 padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-                decoration: BoxDecoration(
+                decoration: ShapeDecoration(
                   color: surface,
-                  borderRadius: BorderRadius.circular(18),
-                  border: Border.all(color: border),
-                  boxShadow: [
+                  shape: RoundedSuperellipseBorder(
+                    borderRadius: BorderRadius.circular(18),
+                    side: BorderSide(color: border),
+                  ),
+                  shadows: [
                     BoxShadow(
                       color: Colors.black.withValues(alpha: 0.18),
                       blurRadius: 12,
@@ -886,9 +908,11 @@ class _PlayerSpeedHudState extends State<PlayerSpeedHud> {
                       curve: Curves.easeOutCubic,
                       width: 22,
                       height: 22,
-                      decoration: BoxDecoration(
+                      decoration: ShapeDecoration(
                         color: container,
-                        borderRadius: BorderRadius.circular(12),
+                        shape: RoundedSuperellipseBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                       child: Icon(
                         Icons.speed_rounded,

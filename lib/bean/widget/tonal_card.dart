@@ -15,7 +15,9 @@ class TonalCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Material(
         color: Theme.of(context).colorScheme.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(tonalCardRadius),
+        shape: RoundedSuperellipseBorder(
+          borderRadius: BorderRadius.circular(tonalCardRadius),
+        ),
         clipBehavior: Clip.antiAlias,
         child: Padding(padding: padding, child: child),
       );
