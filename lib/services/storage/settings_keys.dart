@@ -308,6 +308,12 @@ class SettingsKeys {
     false,
     group: SettingGroup.player,
   );
+  // Null preserves the legacy lowMemoryMode choice until a policy is selected.
+  static const lowMemoryPolicy = SettingKey<String?>(
+    'lowMemoryPolicy',
+    null,
+    group: SettingGroup.player,
+  );
   static const showWindowButton = SettingKey<bool>(
     _SettingBoxKey.showWindowButton,
     false,
@@ -443,6 +449,7 @@ class SettingsKeys {
     true,
     group: SettingGroup.interface,
   );
+  // Retained for legacy settings compatibility; no longer controls the UI.
   static const showAnimeCounter = SettingKey<bool>(
     _SettingBoxKey.showAnimeCounter,
     false,
@@ -590,6 +597,7 @@ class SettingsKeys {
     webDavUsername,
     webDavPassword,
     lowMemoryMode,
+    lowMemoryPolicy,
     showWindowButton,
     useDynamicColor,
     exitBehavior,

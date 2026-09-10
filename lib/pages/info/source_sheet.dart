@@ -9,7 +9,9 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:kazumi/bean/dialog/dialog_helper.dart';
 import 'package:kazumi/bean/dialog/material_bottom_sheet.dart';
 import 'package:kazumi/bean/widget/loading_indicator.dart';
+import 'package:kazumi/bean/widget/empty_state_widget.dart';
 import 'package:kazumi/bean/widget/split_list_row.dart';
+import 'package:kazumi/bean/widget/state_presentation.dart';
 import 'package:kazumi/modules/search/plugin_search_module.dart';
 import 'package:kazumi/pages/collect/collect_controller.dart';
 import 'package:kazumi/pages/info/info_controller.dart';
@@ -39,7 +41,7 @@ class SourceSheet extends StatefulWidget {
   State<SourceSheet> createState() => _SourceSheetState();
 }
 
-class _SourceSheetState extends State<SourceSheet> {
+class _SourceSheetState extends State<SourceSheet> with KazumiDialogOwner {
   final CollectController _collectController = inject<CollectController>();
   final PluginsController _pluginsController = inject<PluginsController>();
   final Map<String, String> _sourceKeywords = {};
@@ -47,7 +49,6 @@ class _SourceSheetState extends State<SourceSheet> {
   late final String _keyword;
   late final PluginSearchService _searchService;
   late final _SourceCaptchaFlow _captchaFlow;
-  RuleCancelToken? _chapterCancelToken;
 
   @override
   void initState() {
@@ -67,7 +68,6 @@ class _SourceSheetState extends State<SourceSheet> {
 
   @override
   void dispose() {
-    _chapterCancelToken?.cancel();
     _searchService.cancel();
     _captchaFlow.dispose();
     super.dispose();
@@ -119,41 +119,33 @@ class _SourceSheetState extends State<SourceSheet> {
   }
 
   Future<void> _openSearchItem(String name, SearchItem searchItem) async {
-    if (_chapterCancelToken != null) return;
+    if (dialogs.isRunning) return;
     final plugin = _pluginFor(name);
-    final cancelToken = _chapterCancelToken = RuleCancelToken();
-    KazumiDialog.showLoading(
-      msg: '正在获取播放列表',
-      barrierDismissible: isDesktop(),
-      onDismiss: cancelToken.cancel,
-    );
-    try {
-      final rawRoads = await plugin.queryChapterRoads(
-        searchItem.src,
-        cancelToken: cancelToken,
+    await dialogs.run((task) async {
+      final cancelToken = RuleCancelToken();
+      final rawRoads = await task.loading(
+        message: '正在获取播放列表',
+        barrierDismissible: isDesktop(),
+        onCancel: cancelToken.cancel,
+        action: () =>
+            plugin.queryChapterRoads(searchItem.src, cancelToken: cancelToken),
       );
-      if (!mounted || cancelToken.isCancelled) return;
       if (rawRoads.isEmpty) throw ChapterErrorException(plugin.name);
       final roads = rawRoads.map(EpisodeUtils.normalizeRoad).toList();
-      KazumiDialog.dismiss();
-      context.pushNamed(
-        '/video/',
-        arguments: OnlineVideoPlaybackArgs(
-          bangumiItem: widget.infoController.bangumiItem,
-          plugin: plugin,
-          title: searchItem.name,
-          src: searchItem.src,
-          roads: roads,
-        ),
-      );
-    } catch (error) {
-      if (!mounted || cancelToken.isCancelled) return;
+      task.withContext((context) => context.pushNamed(
+            '/video/',
+            arguments: OnlineVideoPlaybackArgs(
+              bangumiItem: widget.infoController.bangumiItem,
+              plugin: plugin,
+              title: searchItem.name,
+              src: searchItem.src,
+              roads: roads,
+            ),
+          ));
+    }, onError: (error, stackTrace) {
       KazumiLogger().w('SourceSheet: failed to query playlist', error: error);
-      KazumiDialog.dismiss();
       KazumiDialog.showToast(message: '未能获取播放列表，请重试或选择其他结果');
-    } finally {
-      _chapterCancelToken = null;
-    }
+    });
   }
 
   void _showAliasPicker(String pluginName) {
@@ -187,28 +179,33 @@ class _SourceSheetState extends State<SourceSheet> {
   Widget build(BuildContext context) => Observer(
         builder: (context) {
           // Snapshot observable values here; lazy list builders are not tracked.
-          final groups = <_SourceSearchGroup>[];
-          for (final plugin in _pluginsController.pluginList) {
-            final seen = <String>{};
-            final results = <SearchItem>[];
-            for (final response
-                in widget.infoController.pluginSearchResponseList) {
-              if (response.pluginName != plugin.name) continue;
-              for (final result in response.data) {
-                if (seen.add(result.src)) results.add(result);
-              }
+          final groupsByName = {
+            for (final plugin in _pluginsController.pluginList)
+              plugin.name: _SourceSearchGroup(
+                name: plugin.name,
+                keyword: _keywordFor(plugin.name),
+                status: widget.infoController.pluginSearchStatus[plugin.name] ??
+                    PluginSearchStatus.pending,
+                results: <SearchItem>[],
+              ),
+          };
+          final seenBySource = <String, Set<String>>{};
+          String? firstResultSource;
+          // Responses follow completion order; groups keep configured order.
+          for (final response
+              in widget.infoController.pluginSearchResponseList) {
+            final group = groupsByName[response.pluginName];
+            if (group == null) continue;
+            final seen = seenBySource.putIfAbsent(group.name, () => <String>{});
+            for (final result in response.data) {
+              if (seen.add(result.src)) group.results.add(result);
             }
-            groups.add(_SourceSearchGroup(
-              name: plugin.name,
-              keyword: _keywordFor(plugin.name),
-              status: widget.infoController.pluginSearchStatus[plugin.name] ??
-                  PluginSearchStatus.pending,
-              results: results,
-            ));
+            if (group.hasResults) firstResultSource ??= group.name;
           }
           return _SourceSheetView(
             keyword: _keyword,
-            groups: groups,
+            groups: groupsByName.values.toList(),
+            firstResultSource: firstResultSource,
             onSourceSearch: _showCustomKeyword,
             onSourceAliasSearch: _showAliasPicker,
             onRetry: _retry,

@@ -2,6 +2,7 @@ import 'package:kazumi/bean/settings/settings_list.dart';
 import 'package:flutter/material.dart';
 import 'package:kazumi/bean/settings/settings_detail_scaffold.dart';
 import 'package:kazumi/services/storage/storage.dart';
+import 'package:kazumi/utils/device.dart';
 
 class InterfaceSettingsPage extends StatefulWidget {
   const InterfaceSettingsPage({super.key});
@@ -12,8 +13,9 @@ class InterfaceSettingsPage extends StatefulWidget {
 
 class _InterfaceSettingsPageState extends State<InterfaceSettingsPage> {
   late bool showRating;
-  late bool showAnimeCounter;
   late String defaultPage;
+  int _exitBehavior = GStorage.getSetting(SettingsKeys.exitBehavior);
+  static const _exitBehaviorTitles = ['退出 Kazumi', '最小化至托盘', '每次都询问'];
   final MenuController defaultPageMenuController = MenuController();
 
   static const Map<String, String> defaultPageMap = {
@@ -27,7 +29,6 @@ class _InterfaceSettingsPageState extends State<InterfaceSettingsPage> {
   void initState() {
     super.initState();
     showRating = GStorage.getSetting(SettingsKeys.showRating);
-    showAnimeCounter = GStorage.getSetting(SettingsKeys.showAnimeCounter);
     defaultPage = GStorage.getSetting(SettingsKeys.defaultStartupPage);
   }
 
@@ -98,22 +99,42 @@ class _InterfaceSettingsPageState extends State<InterfaceSettingsPage> {
                 setState(() {});
               },
               title: Text('显示评分'),
-              description: Text('关闭后将在概览中隐藏评分信息'),
+              description: Text('关闭后隐藏概览和番剧列表中的评分信息'),
               initialValue: showRating,
             ),
-            SettingsTile.switchTile(
-              leading: Icons.insights_rounded,
-              onToggle: (value) async {
-                showAnimeCounter = value ?? !showAnimeCounter;
-                await GStorage.putSetting(
-                    SettingsKeys.showAnimeCounter, showAnimeCounter);
-                setState(() {});
-              },
-              title: Text('显示追番统计'),
-              description: Text('在追番页面的分类标签上显示数量'),
-              initialValue: showAnimeCounter,
-            ),
           ]),
+          if (isDesktop())
+            SettingsSection(
+              title: const Text('窗口行为'),
+              tiles: [
+                SettingsTile(
+                  leading: Icons.exit_to_app_rounded,
+                  title: const Text('关闭窗口时'),
+                  description: Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: DropdownButton<int>(
+                      value: _exitBehavior.clamp(
+                          0, _exitBehaviorTitles.length - 1),
+                      isExpanded: true,
+                      borderRadius: BorderRadius.circular(16),
+                      underline: const SizedBox.shrink(),
+                      items: [
+                        for (var i = 0; i < _exitBehaviorTitles.length; i++)
+                          DropdownMenuItem(
+                            value: i,
+                            child: Text(_exitBehaviorTitles[i]),
+                          ),
+                      ],
+                      onChanged: (value) {
+                        if (value == null) return;
+                        setState(() => _exitBehavior = value);
+                        GStorage.putSetting(SettingsKeys.exitBehavior, value);
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
         ],
       ),
     );
