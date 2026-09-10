@@ -222,9 +222,6 @@ class _HistoryCardState extends State<_HistoryCard> with KazumiDialogOwner {
               (context) => context.pushNamed('/video/', arguments: args));
         case HistoryPlaybackUnavailable(:final reason):
           KazumiDialog.showToast(message: reason);
-          if (reason.contains('最新集') && mounted) {
-            setState(() {});
-          }
       }
     }, errorMessage: '暂时无法播放下一集，请稍后重试');
   }
@@ -247,15 +244,13 @@ class _HistoryCardState extends State<_HistoryCard> with KazumiDialogOwner {
     return Observer(builder: (context) {
       // getCollectType reads storage, so track the observable list explicitly.
       _collectController.collectibles.length;
-      final hasNext = _playbackService.hasNextEpisode(widget.history);
       return HistoryRecordTile(
         history: widget.history,
         borderRadius: widget.borderRadius,
         editing: widget.editing,
         busy: widget.busy,
         onPlay: _play,
-        onPlayNext: hasNext ? _playNext : null,
-        hasNextEpisode: hasNext,
+        onPlayNext: _playNext,
         onDelete: widget.onDelete,
         onDetails: () =>
             context.pushNamed('/info/', arguments: widget.history.bangumiItem),

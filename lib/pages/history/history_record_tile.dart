@@ -10,7 +10,6 @@ class HistoryRecordTile extends StatelessWidget {
     required this.history,
     required this.onPlay,
     this.onPlayNext,
-    this.hasNextEpisode = true,
     required this.onDetails,
     required this.onDelete,
     required this.collectType,
@@ -23,7 +22,6 @@ class HistoryRecordTile extends StatelessWidget {
   final History history;
   final VoidCallback onPlay;
   final VoidCallback? onPlayNext;
-  final bool hasNextEpisode;
   final VoidCallback onDetails;
   final Future<void> Function() onDelete;
   final CollectType collectType;
@@ -67,6 +65,7 @@ class HistoryRecordTile extends StatelessWidget {
     final image = history.bangumiItem.images['large'] ?? '';
     final position = _position;
     final progressRatio = _progressRatio;
+    final cardShape = RoundedSuperellipseBorder(borderRadius: borderRadius);
 
     return Dismissible(
       key: ValueKey(history.key),
@@ -80,14 +79,16 @@ class HistoryRecordTile extends StatelessWidget {
       background: Container(
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: 24),
-        decoration: BoxDecoration(
-            color: colors.errorContainer, borderRadius: borderRadius),
+        decoration: ShapeDecoration(
+          color: colors.errorContainer,
+          shape: cardShape,
+        ),
         child:
             Icon(Icons.delete_outline_rounded, color: colors.onErrorContainer),
       ),
       child: Material(
         color: colors.surfaceContainerLow,
-        borderRadius: borderRadius,
+        shape: cardShape,
         clipBehavior: Clip.antiAlias,
         child: Stack(
           children: [
@@ -103,35 +104,49 @@ class HistoryRecordTile extends StatelessWidget {
                   history.adapterName,
                   time
                 ].where((text) => text.isNotEmpty).join('，'),
-                child: InkWell(onTap: editing || busy ? null : onPlay),
+                child: InkWell(onTap: editing || busy ? null : onDetails),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               child: LayoutBuilder(builder: (context, constraints) {
                 final wide = constraints.maxWidth >= 600;
                 final largeText =
                     MediaQuery.textScalerOf(context).scale(14) > 21;
-                final coverWidth = wide ? 72.0 : 60.0;
+                final coverWidth = wide ? 68.0 : 58.0;
+                final coverHeight = coverWidth * 1.38;
                 final content = Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(title,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.titleMedium
-                            ?.copyWith(fontWeight: FontWeight.w700)),
-                    const SizedBox(height: 4),
-                    Text(episode,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.bodyMedium
-                            ?.copyWith(color: colors.onSurfaceVariant)),
+                    Text(
+                      title,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 15,
+                        height: 1.25,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      episode,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: colors.onSurfaceVariant,
+                        fontSize: 13,
+                      ),
+                    ),
                     if (progressRatio > 0.0) ...[
-                      const SizedBox(height: 6),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(2),
+                      const SizedBox(height: 5),
+                      ClipPath(
+                        clipper: ShapeBorderClipper(
+                          shape: RoundedSuperellipseBorder(
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                        ),
                         child: SizedBox(
                           width: double.infinity,
                           child: LinearProgressIndicator(
@@ -144,7 +159,7 @@ class HistoryRecordTile extends StatelessWidget {
                         ),
                       ),
                     ],
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 5),
                     Text(
                       [
                         source,
@@ -153,8 +168,10 @@ class HistoryRecordTile extends StatelessWidget {
                       ].join(' · '),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.bodySmall
-                          ?.copyWith(color: colors.onSurfaceVariant),
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: colors.onSurfaceVariant,
+                        fontSize: 11.5,
+                      ),
                     ),
                   ],
                 );
@@ -168,12 +185,16 @@ class HistoryRecordTile extends StatelessWidget {
                       children: [
                         ExcludeSemantics(
                           child: IgnorePointer(
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
+                            child: ClipPath(
+                              clipper: ShapeBorderClipper(
+                                shape: RoundedSuperellipseBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
                               child: image.isEmpty
                                   ? Container(
                                       width: coverWidth,
-                                      height: coverWidth * 1.4,
+                                      height: coverHeight,
                                       color: colors.surfaceContainerHighest,
                                       child: Icon(Icons.movie_outlined,
                                           color: colors.onSurfaceVariant),
@@ -181,12 +202,12 @@ class HistoryRecordTile extends StatelessWidget {
                                   : NetworkImgLayer(
                                       src: image,
                                       width: coverWidth,
-                                      height: coverWidth * 1.4,
+                                      height: coverHeight,
                                     ),
                             ),
                           ),
                         ),
-                        const SizedBox(width: 16),
+                        const SizedBox(width: 12),
                         Expanded(
                           child: ExcludeSemantics(
                             child: IgnorePointer(child: content),
@@ -199,7 +220,7 @@ class HistoryRecordTile extends StatelessWidget {
                       ],
                     ),
                     if (largeText) ...[
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 10),
                       Align(alignment: Alignment.centerRight, child: actions),
                     ],
                   ],
@@ -214,28 +235,35 @@ class HistoryRecordTile extends StatelessWidget {
 
   Widget _actions(BuildContext context, {required bool wide}) {
     final colors = Theme.of(context).colorScheme;
+    final buttonSize = wide ? const Size(36, 36) : const Size(30, 30);
+    final iconSize = wide ? 20.0 : 16.0;
+    final buttonRadius = wide ? 10.0 : 8.0;
+    final buttonShape = RoundedSuperellipseBorder(
+      borderRadius: BorderRadius.circular(buttonRadius),
+    );
+
     if (busy) {
-      return const SizedBox(
-        width: 48,
-        height: 48,
-        child: Center(child: LoadingIndicator(size: 24)),
+      return SizedBox(
+        width: buttonSize.width,
+        height: buttonSize.height,
+        child: const Center(child: LoadingIndicator(size: 18)),
       );
     }
     if (editing) {
       return IconButton.filledTonal(
         tooltip: '删除记录',
         style: IconButton.styleFrom(
-          minimumSize: const Size(48, 48),
+          minimumSize: buttonSize,
+          fixedSize: buttonSize,
           backgroundColor: colors.errorContainer,
           foregroundColor: colors.onErrorContainer,
+          padding: EdgeInsets.zero,
+          shape: buttonShape,
         ),
         onPressed: onDelete,
-        icon: const Icon(Icons.delete_outline_rounded),
+        icon: Icon(Icons.delete_outline_rounded, size: iconSize),
       );
     }
-
-    final buttonSize = wide ? const Size(44, 44) : const Size(38, 38);
-    final iconSize = wide ? 24.0 : 20.0;
 
     final buttons = [
       IconButton.filledTonal(
@@ -246,11 +274,12 @@ class HistoryRecordTile extends StatelessWidget {
           backgroundColor: colors.primaryContainer,
           foregroundColor: colors.onPrimaryContainer,
           padding: EdgeInsets.zero,
+          shape: buttonShape,
         ),
         onPressed: onPlay,
         icon: Icon(Icons.play_arrow_rounded, size: iconSize),
       ),
-      if (hasNextEpisode && onPlayNext != null)
+      if (onPlayNext != null)
         IconButton.filledTonal(
           tooltip: '下一集',
           style: IconButton.styleFrom(
@@ -259,12 +288,20 @@ class HistoryRecordTile extends StatelessWidget {
             backgroundColor: colors.surfaceContainerHighest,
             foregroundColor: colors.onSurfaceVariant,
             padding: EdgeInsets.zero,
+            shape: buttonShape,
           ),
           onPressed: onPlayNext,
           icon: Icon(Icons.skip_next_rounded, size: iconSize),
         ),
       MenuAnchor(
         consumeOutsideTap: true,
+        style: MenuStyle(
+          shape: WidgetStatePropertyAll<OutlinedBorder>(
+            RoundedSuperellipseBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+          ),
+        ),
         menuChildren: [
           MenuItemButton(
             leadingIcon: const Icon(Icons.info_outline_rounded),
@@ -301,6 +338,7 @@ class HistoryRecordTile extends StatelessWidget {
             minimumSize: buttonSize,
             fixedSize: buttonSize,
             padding: EdgeInsets.zero,
+            shape: buttonShape,
           ),
           onPressed: () =>
               controller.isOpen ? controller.close() : controller.open(),
@@ -322,7 +360,7 @@ class HistoryRecordTile extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               for (int i = 0; i < buttons.length; i++) ...[
-                if (i > 0) const SizedBox(height: 4),
+                if (i > 0) const SizedBox(height: 2),
                 buttons[i],
               ],
             ],
