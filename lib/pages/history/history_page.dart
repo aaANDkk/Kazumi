@@ -202,6 +202,33 @@ class _HistoryCardState extends State<_HistoryCard> with KazumiDialogOwner {
     }, errorMessage: '暂时无法继续播放，请稍后重试');
   }
 
+  Future<void> _playNext() async {
+    if (widget.editing || widget.busy || dialogs.isRunning) return;
+    await dialogs.run((task) async {
+      final cancelToken = RuleCancelToken();
+      final result = await task.loading(
+        message: '获取中',
+        barrierDismissible: isDesktop(),
+        onCancel: cancelToken.cancel,
+        action: () => _playbackService.open(
+          widget.history,
+          cancelToken: cancelToken,
+          nextEpisode: true,
+        ),
+      );
+      switch (result) {
+        case HistoryPlaybackReady(:final args):
+          task.withContext(
+              (context) => context.pushNamed('/video/', arguments: args));
+        case HistoryPlaybackUnavailable(:final reason):
+          KazumiDialog.showToast(message: reason);
+          if (reason.contains('最新集') && mounted) {
+            setState(() {});
+          }
+      }
+    }, errorMessage: '暂时无法播放下一集，请稍后重试');
+  }
+
   Future<void> _changeCollect(CollectType type) async {
     if (_updatingCollect) return;
     setState(() => _updatingCollect = true);
@@ -220,12 +247,15 @@ class _HistoryCardState extends State<_HistoryCard> with KazumiDialogOwner {
     return Observer(builder: (context) {
       // getCollectType reads storage, so track the observable list explicitly.
       _collectController.collectibles.length;
+      final hasNext = _playbackService.hasNextEpisode(widget.history);
       return HistoryRecordTile(
         history: widget.history,
         borderRadius: widget.borderRadius,
         editing: widget.editing,
         busy: widget.busy,
         onPlay: _play,
+        onPlayNext: hasNext ? _playNext : null,
+        hasNextEpisode: hasNext,
         onDelete: widget.onDelete,
         onDetails: () =>
             context.pushNamed('/info/', arguments: widget.history.bangumiItem),

@@ -9,6 +9,8 @@ class HistoryRecordTile extends StatelessWidget {
     super.key,
     required this.history,
     required this.onPlay,
+    this.onPlayNext,
+    this.hasNextEpisode = true,
     required this.onDetails,
     required this.onDelete,
     required this.collectType,
@@ -20,6 +22,8 @@ class HistoryRecordTile extends StatelessWidget {
 
   final History history;
   final VoidCallback onPlay;
+  final VoidCallback? onPlayNext;
+  final bool hasNextEpisode;
   final VoidCallback onDetails;
   final Future<void> Function() onDelete;
   final CollectType collectType;
@@ -27,6 +31,11 @@ class HistoryRecordTile extends StatelessWidget {
   final BorderRadius borderRadius;
   final bool editing;
   final bool busy;
+
+  double get _progressRatio {
+    final progress = history.progresses[history.lastWatchEpisode];
+    return progress?.progressRatio ?? 0.0;
+  }
 
   String get _position {
     final progress = history.progresses[history.lastWatchEpisode]?.progress;
@@ -57,6 +66,7 @@ class HistoryRecordTile extends StatelessWidget {
         TimeOfDay.fromDateTime(history.lastWatchTime.toLocal()).format(context);
     final image = history.bangumiItem.images['large'] ?? '';
     final position = _position;
+    final progressRatio = _progressRatio;
 
     return Dismissible(
       key: ValueKey(history.key),
@@ -112,27 +122,36 @@ class HistoryRecordTile extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: theme.textTheme.titleMedium
                             ?.copyWith(fontWeight: FontWeight.w700)),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 4),
                     Text(episode,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: theme.textTheme.bodyMedium
                             ?.copyWith(color: colors.onSurfaceVariant)),
-                    if (position.isNotEmpty) ...[
-                      const SizedBox(height: 4),
-                      Text(position,
-                          style: theme.textTheme.labelMedium?.copyWith(
-                              color: colors.primary,
-                              fontWeight: FontWeight.w600)),
+                    if (progressRatio > 0.0) ...[
+                      const SizedBox(height: 6),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(2),
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: LinearProgressIndicator(
+                            value: progressRatio,
+                            minHeight: 3,
+                            backgroundColor: colors.surfaceContainerHighest,
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(colors.primary),
+                          ),
+                        ),
+                      ),
                     ],
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 6),
                     Text(
                       [
                         source,
                         if (history.adapterName.isNotEmpty) history.adapterName,
                         time
                       ].join(' · '),
-                      maxLines: 2,
+                      maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.bodySmall
                           ?.copyWith(color: colors.onSurfaceVariant),
@@ -215,17 +234,35 @@ class HistoryRecordTile extends StatelessWidget {
       );
     }
 
+    final buttonSize = wide ? const Size(44, 44) : const Size(38, 38);
+    final iconSize = wide ? 24.0 : 20.0;
+
     final buttons = [
       IconButton.filledTonal(
         tooltip: '继续播放',
         style: IconButton.styleFrom(
-          minimumSize: const Size(48, 48),
+          minimumSize: buttonSize,
+          fixedSize: buttonSize,
           backgroundColor: colors.primaryContainer,
           foregroundColor: colors.onPrimaryContainer,
+          padding: EdgeInsets.zero,
         ),
         onPressed: onPlay,
-        icon: const Icon(Icons.play_arrow_rounded),
+        icon: Icon(Icons.play_arrow_rounded, size: iconSize),
       ),
+      if (hasNextEpisode && onPlayNext != null)
+        IconButton.filledTonal(
+          tooltip: '下一集',
+          style: IconButton.styleFrom(
+            minimumSize: buttonSize,
+            fixedSize: buttonSize,
+            backgroundColor: colors.surfaceContainerHighest,
+            foregroundColor: colors.onSurfaceVariant,
+            padding: EdgeInsets.zero,
+          ),
+          onPressed: onPlayNext,
+          icon: Icon(Icons.skip_next_rounded, size: iconSize),
+        ),
       MenuAnchor(
         consumeOutsideTap: true,
         menuChildren: [
@@ -260,15 +297,35 @@ class HistoryRecordTile extends StatelessWidget {
         ],
         builder: (context, controller, child) => IconButton(
           tooltip: '更多操作',
-          constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+          style: IconButton.styleFrom(
+            minimumSize: buttonSize,
+            fixedSize: buttonSize,
+            padding: EdgeInsets.zero,
+          ),
           onPressed: () =>
               controller.isOpen ? controller.close() : controller.open(),
-          icon: const Icon(Icons.more_horiz_rounded),
+          icon: Icon(Icons.more_horiz_rounded, size: iconSize),
         ),
       ),
     ];
     return wide
-        ? Row(mainAxisSize: MainAxisSize.min, children: buttons)
-        : Column(mainAxisSize: MainAxisSize.min, children: buttons);
+        ? Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (int i = 0; i < buttons.length; i++) ...[
+                if (i > 0) const SizedBox(width: 4),
+                buttons[i],
+              ],
+            ],
+          )
+        : Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (int i = 0; i < buttons.length; i++) ...[
+                if (i > 0) const SizedBox(height: 4),
+                buttons[i],
+              ],
+            ],
+          );
   }
 }

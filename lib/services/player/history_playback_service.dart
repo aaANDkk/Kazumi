@@ -1,3 +1,4 @@
+import 'package:kazumi/modules/bangumi/bangumi_item.dart';
 import 'package:kazumi/modules/download/download_module.dart';
 import 'package:kazumi/modules/history/history_module.dart';
 import 'package:kazumi/pages/download/download_controller.dart';
@@ -34,6 +35,80 @@ class HistoryPlaybackService {
 
   final PluginsController _pluginsController;
   final DownloadController _downloadController;
+
+  static final Set<String> _exhaustedKeys = <String>{};
+
+  static void markExhausted(History history) {
+    _exhaustedKeys.add('${history.key}#${history.lastWatchEpisode}');
+  }
+
+  static void clearExhausted(History history) {
+    _exhaustedKeys.remove('${history.key}#${history.lastWatchEpisode}');
+  }
+
+  static int? _extractTotalEpisodes(BangumiItem item) {
+    final info = item.info.trim();
+    if (info.isNotEmpty) {
+      final match1 =
+          RegExp(r'(?:话数|話數|集数|集數)[:：\s]+([1-9]\d*)').firstMatch(info);
+      if (match1 != null) {
+        return int.tryParse(match1.group(1)!);
+      }
+      final match2 =
+          RegExp(r'^\s*([1-9]\d*)\s*[话話集](?=\s*(?:[/／]|$))').firstMatch(info);
+      if (match2 != null) {
+        return int.tryParse(match2.group(1)!);
+      }
+    }
+    for (final tag in [...item.metaTags, ...item.tags.map((t) => t.name)]) {
+      final m =
+          RegExp(r'^(?:全)?([1-9]\d*)[话話集](?:全)?$').firstMatch(tag.trim());
+      if (m != null) {
+        return int.tryParse(m.group(1)!);
+      }
+    }
+    return null;
+  }
+
+  bool hasNextEpisode(History history) {
+    if (HistoryEntryKind.normalize(history.entryKind) ==
+        HistoryEntryKind.offline) {
+      final downloadedEpisodes = _downloadController.getCompletedEpisodes(
+        history.bangumiItem.id,
+        history.adapterName,
+      );
+      if (downloadedEpisodes.isEmpty) return false;
+      int currentEpNum = history.lastWatchEpisode;
+      if (history.episodePageUrl.isNotEmpty) {
+        for (final ep in downloadedEpisodes) {
+          if (ep.episodePageUrl == history.episodePageUrl) {
+            currentEpNum = ep.episodeNumber;
+            break;
+          }
+        }
+      }
+      return downloadedEpisodes.any((ep) => ep.episodeNumber > currentEpNum);
+    }
+
+    if (_exhaustedKeys.contains('${history.key}#${history.lastWatchEpisode}')) {
+      return false;
+    }
+
+    final hasHigherInHistory =
+        history.progresses.keys.any((ep) => ep > history.lastWatchEpisode);
+    if (hasHigherInHistory) {
+      return true;
+    }
+
+    final totalEps = _extractTotalEpisodes(history.bangumiItem);
+    if (totalEps != null &&
+        totalEps > 0 &&
+        history.lastWatchEpisode >= totalEps) {
+      return false;
+    }
+
+    return true;
+  }
 
   /// [cancelToken] lets the caller abort the online lookup, e.g. when the
   /// loading dialog it put up is dismissed.
@@ -101,6 +176,7 @@ class HistoryPlaybackService {
           currentEpisodeTitle: history.lastWatchEpisodeName,
         );
         if (nextIdx == null) {
+          markExhausted(history);
           return const HistoryPlaybackUnavailable('当前已是最新集了');
         }
         targetEpisode = nextIdx;
@@ -168,6 +244,7 @@ class HistoryPlaybackService {
         }
       }
       if (targetEpisode == null) {
+        markExhausted(history);
         return const HistoryPlaybackUnavailable('当前已是最新集了或下一集未下载');
       }
     } else {
