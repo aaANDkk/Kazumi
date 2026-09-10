@@ -126,12 +126,12 @@ class SuperellipseInputBorder extends OutlineInputBorder {
 
 ThemeData applyAppTheme(ThemeData theme) {
   return theme.copyWith(
-    cardTheme: const CardTheme(
+    cardTheme: const CardThemeData(
       shape: RoundedSuperellipseBorder(
         borderRadius: BorderRadius.all(Radius.circular(16)),
       ),
     ),
-    dialogTheme: const DialogTheme(
+    dialogTheme: const DialogThemeData(
       shape: RoundedSuperellipseBorder(
         borderRadius: BorderRadius.all(Radius.circular(28)),
       ),
